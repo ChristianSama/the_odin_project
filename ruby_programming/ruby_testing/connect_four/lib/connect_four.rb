@@ -2,11 +2,11 @@ class Cell
   attr_accessor :token
   def initialize
     @free = true
-    @token = 1
+    @token = " "
   end
 
   def fill
-    @token = "⚫"
+    @token = "☻" #☺
   end
 end
 
@@ -20,32 +20,51 @@ class Board
 
   def create_board
     @rows.times do
-      @board.push(Array.new(@cols, Cell.new))
+      #@board.push(Array.new(@cols, Cell.new))
+      row = []
+      @cols.times do
+        row << Cell.new
+      end
+      @board << row
     end
   end
 
   def print_board
-    i = 0
     @board.each do |row|
-      row.each do |el|
-        el.token = i
-        print "#{el.token} "
-        i += 1
+      @cols.times do |i|
+        print "----"
+        if (i+1 == @cols)
+          print "-"
+        end
       end
       print "\n"
+      row.each do |el|
+        print "| #{el.token} "
+        if (row.last == el)
+          print "|\n"
+        end
+      end
+      if (@board.last == row)
+        @cols.times do |i|
+          print "----"
+          if (i+1 == @cols)
+            print "-"
+          end
+        end
+        print "\n"
+      end
     end
-    puts '0 1 2 3 4 5 6'
+    puts '  0   1   2   3   4   5   6'
   end
 end
 
 class Player
-
   def play_turn(board)
     puts "enter the number corresponding a column"
     col = gets.chomp.to_i
 
     for row in 0...board.length
-      p cur = board[col][row].token
+      cur = board[col][row].token
     end
   end
 end
@@ -60,8 +79,9 @@ end
 b = Board.new(7, 6)
 b.create_board
 b.print_board
-puts "----------"
-p b.board
+#p b.board
 #b.print_board
-# p = Player.new
-# p.play_turn(b.board)
+#p = Player.new
+#p.play_turn(b.board)
+#b.board[3][1].token = '⚫'
+#b.print_board
