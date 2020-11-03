@@ -1,6 +1,9 @@
 class Cell
-  attr_accessor :token, :isFree
-  def initialize
+  attr_accessor :token, :isFree, :index
+  
+
+  def initialize(index)
+    @index = index
     @isFree = true
     @token = " "
   end
@@ -20,11 +23,13 @@ class Board
   end
 
   def create_board
+    i = 1
     @rows.times do
       #@board.push(Array.new(@cols, Cell.new))
       row = []
       @cols.times do
-        row << Cell.new
+        row << Cell.new(i)
+        i += 1
       end
       @board << row
     end
@@ -90,6 +95,7 @@ end
 
 class Game
   @winner = nil
+  #@win_lines = 
 
   def start
     turn = 0
@@ -101,27 +107,64 @@ class Game
     p1 = Player.new("☻")
     p2 = Player.new("☺")
 
-    while (@winner == nil && turn < b.cols * b.rows) do #test max turn
-      if (turn % 2 == 0)
-        play = p2.play_turn(b)
-      else
-        play = p1.play_turn(b)
-      end
-      if (play != nil)
-        b.print_board
-        turn += 1
-        puts turn
-      end
-    end
+    # while (@winner == nil && turn < b.cols * b.rows) do #test max turn
+    #   if (turn % 2 == 0)
+    #     play = p2.play_turn(b)
+    #   else
+    #     play = p1.play_turn(b)
+    #   end
+    #   if (play != nil)
+    #     b.print_board
+    #     turn += 1
+    #     puts turn
+    #   end
+    # end
+    b.board[0][0].token = 'o'
+    b.board[0][1].token = 'x'
+    b.board[0][2].token = ' '
+    b.board[0][3].token = 'x'
+    b.board[0][4].token = 'x'
+    b.board[0][5].token = 'o'
+    b.board[0][6].token = 'x'
+    b.board[1][0].token = 'o'
+    b.board[1][1].token = 'o'
+    b.board[1][2].token = 'o'
+    b.board[1][3].token = 'o'
+    b.board[1][4].token = 'x'
+    b.board[1][5].token = 'o'
+    b.board[1][6].token = 'x'
+    b.print_board
+    check_win(b.board)
   end
 
-  def check_win
+  def check_win(board)
+    #check horizontal lines
+    # board.each do |row|
+    #   count = 0
+    #   for i in (0...row.size - 1)
+    #     if ((row[i].token == ' ') || (row[i].token != row[i+1].token))
+    #       count = 0
+    #       next
+    #     else
+    #       count += 1
+    #       if (count >= 3)
+    #         puts 'true'
+    #         return true
+    #       end
+    #     end
+    #   end
+    # end
     
+    #check vertical lines
+    (0...board[0].size).each do |i|
+      
+    end
   end
 end
 
 g = Game.new
 g.start
+
 
 
 
