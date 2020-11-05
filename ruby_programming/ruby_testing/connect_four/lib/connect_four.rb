@@ -78,7 +78,7 @@ class Player
     loop do
       puts "enter the number corresponding a column"
       col = gets.chomp.to_i
-      break if (col < b.cols && col >= 0)
+      break if (col < b.cols && col >= 0) #TODO: validar ingreso de letras y ""
     end
     for row in 0...b.board.length do
       next_cell = b.board[row][col]
@@ -107,58 +107,82 @@ class Game
     p1 = Player.new("☻")
     p2 = Player.new("☺")
 
-    # while (@winner == nil && turn < b.cols * b.rows) do #test max turn
-    #   if (turn % 2 == 0)
-    #     play = p2.play_turn(b)
-    #   else
-    #     play = p1.play_turn(b)
-    #   end
-    #   if (play != nil)
-    #     b.print_board
-    #     turn += 1
-    #     puts turn
-    #   end
-    # end
-    b.board[0][0].token = 'o'
-    b.board[0][1].token = 'x'
-    b.board[0][2].token = ' '
-    b.board[0][3].token = 'x'
-    b.board[0][4].token = 'x'
-    b.board[0][5].token = 'o'
-    b.board[0][6].token = 'x'
-    b.board[1][0].token = 'o'
-    b.board[1][1].token = 'o'
-    b.board[1][2].token = 'o'
-    b.board[1][3].token = 'o'
-    b.board[1][4].token = 'x'
-    b.board[1][5].token = 'o'
-    b.board[1][6].token = 'x'
-    b.print_board
-    check_win(b.board)
+    while (@winner == nil && turn < b.cols * b.rows) do #test max turn
+      if (turn % 2 == 0)
+        play = p2.play_turn(b)
+        if (check_win(b.board))
+          @winner = p2
+          puts 'The winner is Player 2'
+        end
+      else
+        play = p1.play_turn(b)
+        if (check_win(b.board))
+          @winner = p1 
+          puts 'The winner is Player 1'
+        end
+      end
+      if (play != nil)
+        b.print_board
+        turn += 1
+      end
+    end
   end
 
   def check_win(board)
     #check horizontal lines
-    # board.each do |row|
-    #   count = 0
-    #   for i in (0...row.size - 1)
-    #     if ((row[i].token == ' ') || (row[i].token != row[i+1].token))
-    #       count = 0
-    #       next
-    #     else
-    #       count += 1
-    #       if (count >= 3)
-    #         puts 'true'
-    #         return true
-    #       end
-    #     end
-    #   end
-    # end
+    board.each do |row|
+      count = 0
+      for i in (0...row.size - 1)
+        if ((row[i].token == ' ') || (row[i].token != row[i+1].token))
+          count = 0
+          next
+        else
+          count += 1
+          if (count >= 3)
+            #puts 'true horizontal'
+            return true
+          end
+        end
+      end
+    end
     
     #check vertical lines
-    (0...board[0].size).each do |i|
-      
+    3.times do |start|
+      (0...board[0].size).each do |col|
+        line = []
+        (start..start+3).each do |row|
+          line << board[row][col].token
+        end
+        if (line.uniq.count <= 1 && line.uniq != [' ']) #all elements in line are equal
+          #puts 'true vertical'
+          return true
+        end
+      end
     end
+
+    #check diagonal lines
+    diagonal_lines = [[[2, 0], [3, 1], [4, 2], [5, 3]], 
+                     [[1, 0], [2, 1], [3, 2], [4, 3]], [[2, 1], [3, 2], [4, 3], [5, 4]], 
+                     [[0, 0], [1, 1], [2, 2], [3, 3]], [[1, 1], [2, 2], [3, 3], [4, 4]], [[2, 2], [3, 3], [4, 4], [5, 5]], 
+                     [[0, 1], [1, 2], [2, 3], [3, 4]], [[1, 2], [2, 3], [3, 4], [4, 5]], [[2, 3], [3, 4], [4, 5], [5, 6]],
+                     [[0, 2], [1, 3], [2, 4], [3, 5]], [[1, 3], [2, 4], [3, 5], [4, 6]],
+                     [[0, 3], [1, 4], [2, 5], [3, 6]]]
+
+    diagonal_lines.each do |diagonal|
+      line = []
+      diagonal.each do |coor|
+        row = coor[0]
+        col = coor[1]
+        line << board[row][col].token
+      end
+      #check if all elements in current line are equal
+      if (line.uniq.count <= 1 && line.uniq != [' '])
+        #puts 'true diagonal'
+        return true
+      end
+    end
+
+    return false
   end
 end
 
