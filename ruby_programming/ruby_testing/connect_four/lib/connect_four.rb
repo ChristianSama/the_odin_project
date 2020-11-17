@@ -19,10 +19,11 @@ class Board
   def initialize(cols, rows)
     @cols = cols
     @rows = rows
-    @board = []
+    @board = create_board
   end
 
   def create_board
+    board = []
     i = 1
     @rows.times do
       #@board.push(Array.new(@cols, Cell.new))
@@ -31,8 +32,9 @@ class Board
         row << Cell.new(i)
         i += 1
       end
-      @board << row
+      board << row
     end
+    board
   end
 
   def print_board
@@ -69,7 +71,8 @@ end
 
 class Player
 
-  def initialize(mark)
+  def initialize(name, mark)
+    @name = name
     @mark = mark
   end
 
@@ -91,11 +94,14 @@ class Player
     end
     cur_cell.fill(@mark)
   end
+
+  def input_valid?(input)
+    input.to_i.between?(0, 6)? true : false
+  end
 end
 
 class Game
   @winner = nil
-  #@win_lines = 
 
   def start
     turn = 0
@@ -104,8 +110,8 @@ class Game
     b.create_board
     b.print_board
 
-    p1 = Player.new("☻")
-    p2 = Player.new("☺")
+    p1 = Player.new("Player 1", "☻")
+    p2 = Player.new("Player 2", "☺")
 
     while (@winner == nil && turn < b.cols * b.rows) do #test max turn
       if (turn % 2 == 0)
@@ -146,7 +152,7 @@ class Game
       end
     end
     
-    #check vertical lines
+    #check vertical lines TODO: implement array.transpose to check vertical lines
     3.times do |start|
       (0...board[0].size).each do |col|
         line = []
