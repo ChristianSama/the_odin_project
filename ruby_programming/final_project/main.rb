@@ -1,6 +1,5 @@
-require_relative 'board'
-require_relative 'pieces/piece'
+require_relative 'chess'
 
-b = Board.new
-b.fill_board
-b.print_board
+game = Chess.new
+
+game.start
