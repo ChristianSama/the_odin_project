@@ -1,5 +1,5 @@
 class Pawn < Piece
-  attr_reader :posX, :posY, :is_first_move, :is_selected
+  attr_reader :posX, :posY, :is_first_move, :is_selected, :possible_moves
 
   def initialize(color, posX, posY)
     super(color)
@@ -9,14 +9,11 @@ class Pawn < Piece
     @posY = posY
   end
 
-  # def move
-  #   if (@is_first_move == true)
-  # end
-
   def select(board)
     @is_selected = true
+    @possible_moves = get_possible_moves(board)
     #add dots on possible moves
-    get_possible_moves(board).each do |move|
+    @possible_moves.each do |move|
       board.data[move[0]][move[1]] = '.'
     end
   end
@@ -27,14 +24,29 @@ class Pawn < Piece
 
   def get_possible_moves(board)
     possible_moves = []
-     
-    if (board.data[posX][posY + (1 * get_direction)] == nil)
+    
+    # SE DEBE CORREGIR  
+    if (board.get_piece([posX, posY + (1 * get_direction)]) == nil)
       possible_moves << [posX, posY + (1 * get_direction)]
-      if (@is_first_move && (board.data[posX][posY + (2 * get_direction)] == nil))
+      if (@is_first_move && (board.get_piece([posX, posY + (2 * get_direction)]) == nil))
         possible_moves << [posX, posY + (2 * get_direction)]
       end
     end
+    # SE DEBE CORREGIR
 
     return possible_moves
   end
+
+  def remove_possible_moves(board)
+    possible_moves.each do |move|
+      board.data[move[0]][move[1]] = nil
+    end
+  end
+
+  def move(board, coord)
+    if (@possible_moves.include?(coord))
+      p 'ok'
+    end
+  end
+  
 end

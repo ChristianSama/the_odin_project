@@ -6,10 +6,10 @@ class Board
 
   def initialize
     @data = Array.new(8) {Array.new(8)}
-    fill_board
+    setup_board
   end
 
-  def fill_board #detras de escenas se maneja la matriz original (no transpuesta)
+  def setup_board #detras de escenas se maneja la matriz original (no transpuesta)
     @data[0][7] = Rook.new(0)
     @data[1][7] = Knight.new(0)
     @data[2][7] = Bishop.new(0)
@@ -50,5 +50,9 @@ class Board
     puts '+'
     #print bottom legend
     puts '     0   1   2   3   4   5   6   7'
+  end
+
+  def get_piece(coord)
+    return data[coord[0]][coord[1]]
   end
 end
