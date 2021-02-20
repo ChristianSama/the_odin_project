@@ -72,7 +72,8 @@ class Pawn < Piece
     if (@possible_moves.include?(coord))
       p 'ok'
     end
+    @has_moved = true
+    @is_selected = false
   end
-  @has_moved = true
-  @is_selected = false
+  
 end

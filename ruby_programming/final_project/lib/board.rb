@@ -53,7 +53,11 @@ class Board
   end
 
   def get_piece(coord)
-    return nil if (coord.empty? || data[coord[0]][coord[1]] == '.')
-    return data[coord[0]][coord[1]]
+    return nil if (coord.empty?) #Creo que se puede remover
+    return nil if (coord[0] >= @data.length || coord[1] >= @data.length)
+    piece = data[coord[0]][coord[1]]
+    return nil if (piece == '.')
+
+    return piece
   end
 end
