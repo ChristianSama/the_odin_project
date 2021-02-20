@@ -1,10 +1,10 @@
 class Pawn < Piece
-  attr_reader :x, :x, :is_first_move, :is_selected, :possible_moves
+  attr_reader :x, :y, :has_moved, :is_selected, :possible_moves
 
   def initialize(color, x, y)
     super(color)
     @sprite = @color == 1 ? '♟︎' : '♙'
-    @is_first_move = true
+    @has_moved = false
     @x = x
     @y = y
   end
@@ -24,36 +24,48 @@ class Pawn < Piece
 
   def get_possible_moves(board)
     possible_moves = []
-    
-    # SE DEBE CORREGIR
-    if (board.get_piece([x, y + (1 * get_direction)]) == nil)
-      possible_moves << [x, y + (1 * get_direction)]
-      if (@is_first_move && (board.get_piece([x, y + (2 * get_direction)]) == nil))
-        possible_moves << [x, y + (2 * get_direction)]
+
+    if (!@has_moved)
+      extra_move_set.each do |e| 
+        if (board.get_piece(e) == nil)
+          possible_moves << e
+        end
+      end
+    else
+      move_set.each do |e|
+        if (board.get_piece(e) == nil)  
+          possible_moves << e
+        end
       end
     end
-    # SE DEBE CORREGIR
+
+    capture_set.each do |e|
+      if (board.get_piece(e))
+        possible_moves << e
+      end
+    end
 
     return possible_moves
   end
 
   def move_set
     set = []
-    set << [@x + (1 * get_direction), @y + (-1 * get_direction) ]
     set << [@x, @y + (1 * get_direction)]
     set
   end
 
   def extra_move_set
     set = []
-    move_set.each { |e| set << e}
+    set << move_set[0]
     set << [@x, @y + (2 * get_direction)]
+    set
   end
 
-  def remove_possible_moves(board)
-    possible_moves.each do |move|
-      board.data[move[0]][move[1]] = nil
-    end
+  def capture_set
+    set = []
+    set << [@x + (1 * get_direction), @y + (1 * get_direction)]
+    set << [@x + (-1 * get_direction), @y + (1 * get_direction)]
+    set
   end
 
   def move(board, coord)
@@ -61,5 +73,6 @@ class Pawn < Piece
       p 'ok'
     end
   end
-  
+  @has_moved = true
+  @is_selected = false
 end

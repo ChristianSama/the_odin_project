@@ -17,13 +17,12 @@ class Chess
 
       puts 'Input the square you want to move to'
       coord = gets.chomp.split("").map(&:to_i)
-      selected_piece.remove_possible_moves(@board)
       selected_piece.move(@board, coord)
     end
   end
 
   def select_piece(coord)
-    piece = @board.data[coord[0]][coord[1]]
+    piece = @board.get_piece(coord)
     piece.select(@board)
     @board.print_board
     return piece

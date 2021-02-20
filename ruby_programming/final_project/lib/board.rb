@@ -53,6 +53,7 @@ class Board
   end
 
   def get_piece(coord)
+    return nil if (coord.empty? || data[coord[0]][coord[1]] == '.')
     return data[coord[0]][coord[1]]
   end
 end
