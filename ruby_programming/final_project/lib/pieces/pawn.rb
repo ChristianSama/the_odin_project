@@ -83,9 +83,10 @@ class Pawn < Piece
   end
 
   def move(board, coord)
-    if (@possible_moves.include?(coord))
-      
-    end
+    board.set_piece(coord, self)
+    board.set_piece([@x, @y], nil)
+    @x = coord[0]
+    @y = coord[1]
     @has_moved = true
     @is_selected = false
   end

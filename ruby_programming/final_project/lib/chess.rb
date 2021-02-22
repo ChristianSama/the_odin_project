@@ -9,7 +9,6 @@ class Chess
 
   def start
     @board.print_board
-
     while (true)
       loop do
         puts 'Input the coordinates of a piece to select it'
@@ -29,6 +28,7 @@ class Chess
         next
       end
       @selected_piece.move(@board, coord)
+      @board.print_board
     end
   end
 
