@@ -14,7 +14,7 @@ class Chess
       loop do
         puts 'Input the coordinates of a piece to select it'
         coord = gets.chomp.split("").map(&:to_i)
-        if (!is_valid_coord?(coord))
+        if (!is_valid_coord?(coord) || !is_valid_selection?(coord))
           puts 'Invalid coordinates. Please try again'
           next
         end
@@ -24,7 +24,7 @@ class Chess
 
       puts 'Input the square you want to move to'
       coord = gets.chomp.split("").map(&:to_i)
-      if (!is_valid_coord?(coord))
+      if (!is_valid_coord?(coord) || !is_valid_move?(selected_piece, coord))
         puts 'Invalid coordinates. Please try again'
         next
       end
@@ -37,11 +37,12 @@ class Chess
     return nil if piece == nil
     piece.select(@board)
     @board.print_board
+    piece.remove_dots(@board)
     return piece
   end
 
   def is_valid_coord?(coord)
-    #if its empty
+    #if coord is empty
     return false if (coord.empty?) 
     
     #if its outside boundaries
@@ -52,11 +53,28 @@ class Chess
       return false
     end
 
-    #if there are more or less than 2 elements in coordinate
+    #if there are more or less than 2 elements in coord array
     if (coord.length < 2 ||
         coord.length > 2)
       return false
     end
     return true
   end
+
+  def is_valid_selection?(coord)
+    piece = @board.get_piece(coord)
+    if (piece == nil ||
+        piece.color == :black)
+      return false
+    end
+    return true
+  end
+
+  def is_valid_move?(piece, coord)
+    if (!piece.possible_moves.include?(coord))
+      return false
+    end
+    return true
+  end
+  
 end

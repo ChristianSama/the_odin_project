@@ -10,25 +10,27 @@ class Board
   end
 
   def setup_board #detras de escenas se maneja la matriz original (no transpuesta)
-    @data[0][7] = Rook.new(0)
-    @data[1][7] = Knight.new(0)
-    @data[2][7] = Bishop.new(0)
-    @data[3][7] = Queen.new(0)
-    @data[4][7] = King.new(0)
-    @data[5][7] = Bishop.new(0)
-    @data[6][7] = Knight.new(0)
-    @data[7][7] = Rook.new(0)
+    @data[0][7] = Rook.new(:black)
+    @data[1][7] = Knight.new(:black)
+    @data[2][7] = Bishop.new(:black)
+    @data[3][7] = Queen.new(:black)
+    @data[4][7] = King.new(:black)
+    @data[5][7] = Bishop.new(:black)
+    @data[6][7] = Knight.new(:black)
+    @data[7][7] = Rook.new(:black)
     @data.each_with_index { |e, i| @data[i][6] = Pawn.new(0, i, 6)}
 
-    @data[0][0] = Rook.new(1)
-    @data[1][0] = Knight.new(1)
-    @data[2][0] = Bishop.new(1)
-    @data[3][0] = King.new(1)
-    @data[4][0] = Queen.new(1)
-    @data[5][0] = Bishop.new(1)
-    @data[6][0] = Knight.new(1)
-    @data[7][0] = Rook.new(1)
-    @data.each_with_index { |e, i| @data[i][1] = Pawn.new(1, i, 1)}
+    @data[0][0] = Rook.new(:white)
+    @data[1][0] = Knight.new(:white)
+    @data[2][0] = Bishop.new(:white)
+    @data[3][0] = King.new(:white)
+    @data[4][0] = Queen.new(:white)
+    @data[5][0] = Bishop.new(:white)
+    @data[6][0] = Knight.new(:white)
+    @data[7][0] = Rook.new(:white)
+    @data.each_with_index { |e, i| @data[i][1] = Pawn.new(:white, i, 1)}
+
+    @data[0][1]
   end
 
   def print_board
@@ -60,4 +62,9 @@ class Board
 
     return piece
   end
+
+  def set_piece(coord, obj)#[3,2]
+    data[coord[0]][coord[1]] = obj
+  end
+
 end

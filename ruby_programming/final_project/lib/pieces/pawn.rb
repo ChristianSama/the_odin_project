@@ -1,9 +1,12 @@
+require_relative 'piece'
+
 class Pawn < Piece
-  attr_reader :x, :y, :has_moved, :is_selected, :possible_moves
+  #can remove :is_selected y :possible_moves
+  attr_reader :x, :y, :has_moved, :is_selected, :possible_moves #[[3,2], [3,3]]
 
   def initialize(color, x, y)
     super(color)
-    @sprite = @color == 1 ? '♟︎' : '♙'
+    @sprite = @color == :white ? '♟︎' : '♙'
     @has_moved = false
     @x = x
     @y = y
@@ -11,15 +14,14 @@ class Pawn < Piece
 
   def select(board)
     @is_selected = true
-    @possible_moves = get_possible_moves(board)
+    
     #add dots on possible moves
-    @possible_moves.each do |move|
-      board.data[move[0]][move[1]] = '.'
-    end
+    @possible_moves = get_possible_moves(board)
+    add_dots(board)
   end
 
   def get_direction
-    @color == 1 ? 1 : -1
+    @color == :white ? 1 : -1
   end
 
   def get_possible_moves(board)
@@ -55,7 +57,7 @@ class Pawn < Piece
   end
 
   def extra_move_set
-    set = []
+    set = [] 
     set << move_set[0]
     set << [@x, @y + (2 * get_direction)]
     set
@@ -68,9 +70,21 @@ class Pawn < Piece
     set
   end
 
+  def add_dots(board)
+    @possible_moves.each do |move|
+      board.set_piece(move, '.')
+    end
+  end
+
+  def remove_dots(board)
+    @possible_moves.each do |move|
+      board.set_piece(move, nil)
+    end
+  end
+
   def move(board, coord)
     if (@possible_moves.include?(coord))
-      p 'ok'
+      
     end
     @has_moved = true
     @is_selected = false
