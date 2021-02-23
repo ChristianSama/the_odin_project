@@ -71,10 +71,10 @@ class Chess
   end
 
   def is_valid_move?(piece, coord)
-    if (!piece.possible_moves.include?(coord))
-      return false
+    if (piece.possible_moves.include?(coord))
+      return true
     end
-    return true
+    return false
   end
   
 end

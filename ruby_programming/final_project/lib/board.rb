@@ -19,6 +19,7 @@ class Board
     @data[6][7] = Knight.new(:black)
     @data[7][7] = Rook.new(:black)
     @data.each_with_index { |e, i| @data[i][6] = Pawn.new(0, i, 6)}
+    @data[4][3] =  Pawn.new(:black, 3, 3)
 
     @data[0][0] = Rook.new(:white)
     @data[1][0] = Knight.new(:white)
@@ -29,8 +30,6 @@ class Board
     @data[6][0] = Knight.new(:white)
     @data[7][0] = Rook.new(:white)
     @data.each_with_index { |e, i| @data[i][1] = Pawn.new(:white, i, 1)}
-
-    @data[0][1]
   end
 
   def print_board
