@@ -1,22 +1,15 @@
 require_relative 'piece'
 
 class Pawn < Piece
-  #can remove :is_selected y :possible_moves
-  attr_reader :x, :y, :has_moved, :is_selected, :possible_moves, :captured #[[3,2], [3,3]]
+  attr_reader :has_moved
 
   def initialize(color, x, y)
-    super(color)
+    super(color, x, y)
     @sprite = @color == :white ? '♟︎' : '♙'
     @has_moved = false
-    @captured = []
-    @x = x
-    @y = y
   end
 
   def select(board)
-    @is_selected = true
-    
-    #add dots on possible moves
     @possible_moves = get_possible_moves(board)
     add_dots(board)
   end
@@ -81,7 +74,7 @@ class Pawn < Piece
 
   def remove_dots(board)
     @possible_moves.each do |move|
-      if (board.get_piece(move) == nil) #not so sure
+      if (board.get_piece(move) == nil) 
         board.set_piece(move, nil)
       end
     end
@@ -98,7 +91,5 @@ class Pawn < Piece
       @captured << tile_to_move
     end
     @has_moved = true
-    @is_selected = false
   end
-  
 end

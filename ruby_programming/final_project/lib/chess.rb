@@ -1,20 +1,22 @@
 require_relative 'board'
 
 class Chess
-  attr_reader :board, :selected_piece
+  attr_reader :board, :selected_piece, :current_player
 
   def initialize
     @board = Board.new
+    @current_player = :white
   end
 
   def start
     @board.print_board
     while (true)
       loop do
+        puts "#{@current_player}'s turn"
         puts 'Input the coordinates of a piece to select it'
         coord = gets.chomp.split("").map(&:to_i)
         if (!is_valid_coord?(coord) || !is_valid_selection?(coord))
-          puts 'Invalid coordinates. Please try again'
+          puts 'Invalid selection. Please try again'
           next
         end
         @selected_piece = select_piece(coord)
@@ -24,17 +26,17 @@ class Chess
       puts 'Input the square you want to move to'
       coord = gets.chomp.split("").map(&:to_i)
       if (!is_valid_coord?(coord) || !is_valid_move?(selected_piece, coord))
-        puts 'Invalid coordinates. Please try again'
+        puts 'Invalid move. Please try again'
         next
       end
       @selected_piece.move(@board, coord)
       @board.print_board
+      @current_player = @current_player == :white ? :black : :white
     end
   end
 
   def select_piece(coord)
     piece = @board.get_piece(coord)
-    return nil if piece == nil
     piece.select(@board)
     @board.print_board
     piece.remove_dots(@board)
@@ -58,13 +60,14 @@ class Chess
         coord.length > 2)
       return false
     end
+
     return true
   end
 
   def is_valid_selection?(coord)
     piece = @board.get_piece(coord)
     if (piece == nil ||
-        piece.color == :black)
+        piece.color != @current_player)
       return false
     end
     return true
@@ -76,5 +79,4 @@ class Chess
     end
     return false
   end
-  
 end
