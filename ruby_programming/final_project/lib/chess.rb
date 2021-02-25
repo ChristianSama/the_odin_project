@@ -74,9 +74,19 @@ class Chess
   end
 
   def is_valid_move?(piece, coord)
-    if (piece.possible_moves.include?(coord))
-      return true
+    #check if its in possible moves array of piece
+    if (!piece.possible_moves.include?(coord))
+      return false
     end
-    return false
+    return true
+  end
+
+  def king_in_check?
+    king = @current_player == :white ? @white_king : @black_king
+    pieces = @board.data.flatten.compact
+    pieces.any? do |piece|
+      next if piece.color == king.color
+      piece.capture_set.include?([king.x, king.y])
+    end
   end
 end

@@ -1,8 +1,9 @@
 class Piece
-  attr_reader :x, :y, :sprite, :color, :possible_moves, :captured
+  attr_reader :x, :y, :direction, :sprite, :color, :possible_moves, :captured
 
   def initialize(color, x, y)
     @color = color
+    @direction = color == :white ? 1 : -1
     @x = x
     @y = y
     @captured = []
