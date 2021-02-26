@@ -64,8 +64,9 @@ class Board
   end
 
   def get_piece(coord)
-    return nil if (coord.empty?) #Creo que se puede remover
-    return nil if (coord[0] >= @data.length || coord[1] >= @data.length)
+    coord.each do |e|
+      return nil if (e > 7 || e < 0)
+    end
     piece = data[coord[0]][coord[1]]
     return nil if (piece == '.')
     return piece
@@ -74,5 +75,13 @@ class Board
   def set_piece(coord, obj)#[3,2]
     data[coord[0]][coord[1]] = obj
   end
+
+  # def change_location(piece, coord)
+  #   set_piece(coord, piece)
+  #   set_piece([piece.x, piece.y], nil)
+  #   piece.x = coord[0]
+  #   piece.y = coord[1]
+  #   piece.has_moved = true
+  # end
 
 end

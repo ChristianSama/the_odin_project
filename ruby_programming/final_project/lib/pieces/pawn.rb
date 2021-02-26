@@ -1,7 +1,8 @@
 require_relative 'piece'
 
 class Pawn < Piece
-  attr_reader :has_moved
+  attr_reader :has_moved, :en_passant_turn
+  attr_accessor :en_passant_capture
 
   def initialize(color, x, y)
     super(color, x, y)
@@ -32,9 +33,14 @@ class Pawn < Piece
     end
 
     capture_set.each do |e|
-      if (board.get_piece(e))
+      piece = board.get_piece(e)
+      if (piece != nil && piece.color != self.color)
         possible_moves << e
       end
+    end
+
+    if en_passant_capture != nil
+      possible_moves << en_passant_capture
     end
 
     return possible_moves
@@ -76,20 +82,66 @@ class Pawn < Piece
     end
   end
 
-  def move(board, coord)
-    tile_to_move = board.get_piece(coord)
-    # if (coord == extra_move_set[1])
-      
-    # end
+  def change_location(board, coord)
     board.set_piece(coord, self)
     board.set_piece([@x, @y], nil)
     @x = coord[0]
     @y = coord[1]
-    
-    if (tile_to_move)
-      @captured << tile_to_move
-    end
     @has_moved = true
+  end
+
+  def move(board, coord)
+    if (board.get_piece(coord) != nil)
+      capture(board, coord)
+      return
+    end
+
+    if (coord == @en_passant_capture)
+      capture_en_passant(board, coord)
+      return
+    end
+
+    moves = extra_move_set
+    if (coord == moves[1])
+      change_location(board, coord)
+      puts 'EN PASSANT MOVE'
+      get_adjacent_pawns(board).each do |pawn|
+        pawn.en_passant_capture = moves[0]
+      end
+      return
+    end
+
+    change_location(board, coord)
+  end
+
+  def capture_en_passant(board, coord)
+    pawn_coord = [coord[0], coord[1] + (-1 * @direction)]
+    p pawn_coord
+    @captured << board.get_piece(pawn_coord)
+    change_location(board, coord)
+    board.set_piece(pawn_coord, nil)
+  end
+
+  def capture(board, coord)
+    @captured << board.get_piece(coord)
+    change_location(board, coord)
+  end
+
+  def get_adjacent_pawns(board)
+    pieces = []
+    adjacent_enemy_pawns = []
+
+    pieces << board.get_piece([@x + 1, @y])
+    pieces << board.get_piece([@x - 1, @y])
+
+    p pieces
+    pieces.each do |p|
+      next if (p == nil)
+      next if (p.color == @color)
+      next if (!p.instance_of?(Pawn))
+      adjacent_enemy_pawns << p
+    end 
+    adjacent_enemy_pawns
   end
   
 end

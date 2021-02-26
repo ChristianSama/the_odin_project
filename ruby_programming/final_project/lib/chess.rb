@@ -15,6 +15,7 @@ class Chess
         puts "#{@current_player}'s turn"
         puts 'Input the coordinates of a piece to select it'
         coord = gets.chomp.split("").map(&:to_i)
+        
         if (!is_valid_coord?(coord) || !is_valid_selection?(coord))
           puts 'Invalid selection. Please try again'
           next
@@ -44,6 +45,12 @@ class Chess
   end
 
   def is_valid_coord?(coord)
+    #if there are more or less than 2 elements in coord array
+    if (coord.length < 2 ||
+      coord.length > 2)
+    return false
+    end
+
     #if coord is empty
     return false if (coord.empty?) 
     
@@ -54,13 +61,6 @@ class Chess
         coord[1] < 0)
       return false
     end
-
-    #if there are more or less than 2 elements in coord array
-    if (coord.length < 2 ||
-        coord.length > 2)
-      return false
-    end
-
     return true
   end
 
