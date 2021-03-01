@@ -86,7 +86,7 @@ class Chess
     pieces = @board.data.flatten.compact
     pieces.any? do |piece|
       next if piece.color == king.color
-      piece.capture_set.include?([king.x, king.y])
+      piece.get_possible_moves.include?([king.x, king.y])
     end
   end
 end

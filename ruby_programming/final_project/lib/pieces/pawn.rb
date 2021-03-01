@@ -104,7 +104,6 @@ class Pawn < Piece
     moves = extra_move_set
     if (coord == moves[1])
       change_location(board, coord)
-      puts 'EN PASSANT MOVE'
       get_adjacent_pawns(board).each do |pawn|
         pawn.en_passant_capture = moves[0]
       end
@@ -115,33 +114,37 @@ class Pawn < Piece
   end
 
   def capture_en_passant(board, coord)
-    pawn_coord = [coord[0], coord[1] + (-1 * @direction)]
-    p pawn_coord
-    @captured << board.get_piece(pawn_coord)
     change_location(board, coord)
+    pawn_coord = [coord[0], coord[1] + (-1 * @direction)]
+    @captured << board.get_piece(pawn_coord)
     board.set_piece(pawn_coord, nil)
   end
 
   def capture(board, coord)
-    @captured << board.get_piece(coord)
+    piece_to_cap = board.get_piece(coord)
     change_location(board, coord)
+    @captured << piece_to_cap
   end
 
   def get_adjacent_pawns(board)
     pieces = []
-    adjacent_enemy_pawns = []
 
     pieces << board.get_piece([@x + 1, @y])
     pieces << board.get_piece([@x - 1, @y])
 
-    p pieces
-    pieces.each do |p|
-      next if (p == nil)
-      next if (p.color == @color)
-      next if (!p.instance_of?(Pawn))
-      adjacent_enemy_pawns << p
-    end 
-    adjacent_enemy_pawns
+    # pieces.each do |p|
+    #   next if (p == nil)
+    #   next if (p.color == @color)
+    #   next if (!p.instance_of?(Pawn))
+    #   adjacent_enemy_pawns << p
+    # end
+
+    pieces.filter do |piece|
+      (piece != nil &&
+      piece.color != @color &&
+      piece.instance_of?(Pawn))
+    end
+
   end
   
 end
