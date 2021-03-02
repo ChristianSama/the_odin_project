@@ -81,12 +81,4 @@ class Chess
     return true
   end
 
-  def king_in_check?
-    king = @current_player == :white ? @white_king : @black_king
-    pieces = @board.data.flatten.compact
-    pieces.any? do |piece|
-      next if piece.color == king.color
-      piece.get_possible_moves.include?([king.x, king.y])
-    end
-  end
 end

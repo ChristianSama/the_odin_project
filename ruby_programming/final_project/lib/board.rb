@@ -14,18 +14,20 @@ class Board
     setup_white_pieces
   end
 
-  def setup_black_pieces
+  def setup_black_pieces #podria usar set_piece
     row = 7
     @data[0][row] = Rook.new(:black, 0, row)
     @data[1][row] = Knight.new(:black, 1, row)
     @data[2][row] = Bishop.new(:black, 2, row)
     @data[3][row] = Queen.new(:black, 3, row)
-    @data[4][row] = King.new(:black, 4, row)
+    @black_king = King.new(:black, 4, row)
+    @data[4][row] = @black_king
     @data[5][row] = Bishop.new(:black, 5, row)
     @data[6][row] = Knight.new(:black, 6, row)
     @data[7][row] = Rook.new(:black, 7, row)
     #pawn setup
     @data.each_with_index { |e, i| @data[i][6] = Pawn.new(:black, i, 6)}
+    
   end
 
   def setup_white_pieces
@@ -33,7 +35,8 @@ class Board
     @data[0][row] = Rook.new(:white, 0, row)
     @data[1][row] = Knight.new(:white, 1, row)
     @data[2][row] = Bishop.new(:white, 2, row)
-    @data[3][row] = King.new(:white, 3, row)
+    @white_king = King.new(:white, 3, row)
+    @data[3][row] = @white_king
     @data[4][row] = Queen.new(:white, 4, row)
     @data[5][row] = Bishop.new(:white, 5, row)
     @data[6][row] = Knight.new(:white, 6, row)
@@ -74,14 +77,47 @@ class Board
 
   def set_piece(coord, obj)#[3,2]
     data[coord[0]][coord[1]] = obj
+    if(obj.is_a?(Piece))
+      obj.x = coord[0]
+      obj.y = coord[1]
+    end
   end
 
-  # def change_location(piece, coord)
-  #   set_piece(coord, piece)
-  #   set_piece([piece.x, piece.y], nil)
-  #   piece.x = coord[0]
-  #   piece.y = coord[1]
-  #   piece.has_moved = true
-  # end
+  def change_location(piece, coord)
+    
+    prev_coord = [piece.x, piece.y]
+
+    set_piece(coord, piece)
+    set_piece(prev_coord, nil)
+
+    if (king_in_check?(piece.color))
+      set_piece(prev_coord, piece)
+      set_piece(coord, nil)
+    else
+      piece.has_moved = true
+    end
+  end
+
+  def auto_check?(piece, coord)
+    prev_coord = [piece.x, piece.y]
+
+    change_location(piece, coord)
+
+    if (king_in_check?(piece.color))
+      change_location(piece, prev_coord)
+      return false
+    end
+
+    return true
+  end
+
+  def king_in_check?(color)
+    king = color == :white ? @white_king : @black_king
+    pieces = @data.flatten.compact
+    pieces.any? do |piece|
+      next if piece.color == color
+      piece.get_possible_moves(self).include?([king.x, king.y])
+    end
+  end
 
 end

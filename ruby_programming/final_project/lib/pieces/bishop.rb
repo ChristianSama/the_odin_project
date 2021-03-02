@@ -6,4 +6,8 @@ class Bishop < Piece
     super(color, x, y)
     @sprite = color == :white ? '♝' : '♗'
   end
+
+  def get_possible_moves(board)
+    return []
+  end
 end

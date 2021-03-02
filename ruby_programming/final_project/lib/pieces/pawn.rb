@@ -1,8 +1,8 @@
 require_relative 'piece'
 
 class Pawn < Piece
-  attr_reader :has_moved, :en_passant_turn
-  attr_accessor :en_passant_capture
+  attr_reader :en_passant_turn
+  attr_accessor :en_passant_capture, :has_moved
 
   def initialize(color, x, y)
     super(color, x, y)
@@ -26,7 +26,7 @@ class Pawn < Piece
       end
     else
       move_set.each do |e|
-        if (board.get_piece(e) == nil)  
+        if (board.get_piece(e) == nil)
           possible_moves << e
         end
       end
@@ -82,14 +82,6 @@ class Pawn < Piece
     end
   end
 
-  def change_location(board, coord)
-    board.set_piece(coord, self)
-    board.set_piece([@x, @y], nil)
-    @x = coord[0]
-    @y = coord[1]
-    @has_moved = true
-  end
-
   def move(board, coord)
     if (board.get_piece(coord) != nil)
       capture(board, coord)
@@ -103,18 +95,18 @@ class Pawn < Piece
 
     moves = extra_move_set
     if (coord == moves[1])
-      change_location(board, coord)
+      board.change_location(self, coord)
       get_adjacent_pawns(board).each do |pawn|
         pawn.en_passant_capture = moves[0]
       end
       return
     end
 
-    change_location(board, coord)
+    board.change_location(self, coord)
   end
 
   def capture_en_passant(board, coord)
-    change_location(board, coord)
+    board.change_location(self, coord)
     pawn_coord = [coord[0], coord[1] + (-1 * @direction)]
     @captured << board.get_piece(pawn_coord)
     board.set_piece(pawn_coord, nil)
@@ -122,7 +114,7 @@ class Pawn < Piece
 
   def capture(board, coord)
     piece_to_cap = board.get_piece(coord)
-    change_location(board, coord)
+    board.change_location(self, coord)
     @captured << piece_to_cap
   end
 
@@ -132,19 +124,11 @@ class Pawn < Piece
     pieces << board.get_piece([@x + 1, @y])
     pieces << board.get_piece([@x - 1, @y])
 
-    # pieces.each do |p|
-    #   next if (p == nil)
-    #   next if (p.color == @color)
-    #   next if (!p.instance_of?(Pawn))
-    #   adjacent_enemy_pawns << p
-    # end
-
     pieces.filter do |piece|
       (piece != nil &&
       piece.color != @color &&
       piece.instance_of?(Pawn))
     end
-
   end
   
 end
