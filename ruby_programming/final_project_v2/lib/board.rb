@@ -4,7 +4,7 @@ Dir.glob(project_root + '/pieces/*') {|file| require file}
 
 class Board
   
-  attr_reader :data
+  attr_reader :data, :selected_piece
 
   def initialize
     @data = Array.new(8) {Array.new(8) {Square.new}}
@@ -23,20 +23,20 @@ class Board
     # @data[row][6].piece = Knight.new(color)
     # @data[row][7].piece = Rook.new(color)
 
-    row = color == :white ? 6 : 1
+    row = color == :white ? 1 : 6
     8.times do |i|
       @data[row][i].piece = Pawn.new(color)
     end
   end
 
   def print_board
-    @data.each_with_index do |row, i|
+    @data.reverse.each_with_index do |row, i|
       #print divider
       print '   '
       8.times {print '+---'}
       puts '+'
       #print row
-      print " #{i} "
+      print " #{8 - i} "
       row.each do |col|
         if (col.piece == nil)
           print "|   "
@@ -51,7 +51,11 @@ class Board
     8.times {print '+---'}
     puts '+'
     #print bottom legend
-    puts '     0   1   2   3   4   5   6   7'
+    puts '     A   B   C   D   E   F   G   H'
+  end
+
+  def select_piece(coord)
+    @selected_piece = @data[coord[0]][coord[1]]
   end
 
 end
