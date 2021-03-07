@@ -13,7 +13,7 @@ class Board
   end
 
   def setup_pieces(color)
-    # row = color == :white ? 7 : 0
+    # row = color == :white ? 0 : 7
     # @data[row][0].piece = Rook.new(color)
     # @data[row][1].piece = Knight.new(color)
     # @data[row][2].piece = Bishop.new(color)
@@ -25,7 +25,7 @@ class Board
 
     row = color == :white ? 1 : 6
     8.times do |i|
-      @data[row][i].piece = Pawn.new(color)
+      @data[row][i].piece = Pawn.new(color, [row, i])
     end
   end
 
@@ -57,5 +57,11 @@ class Board
   def select_piece(coord)
     @selected_piece = @data[coord[0]][coord[1]]
   end
+
+  def get_square(coord)
+    return @data[coord[0]][coord[1]]
+  end
+
+
 
 end
