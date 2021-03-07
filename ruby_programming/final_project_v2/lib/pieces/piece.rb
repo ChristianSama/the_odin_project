@@ -1,18 +1,15 @@
 class Piece
 
-  attr_reader :position, :color, :sprite
+  attr_reader :position, :color, :sprite, :direction
 
   def initialize(color, position)
     @color = color
     @position = position
+    @direction = @color == :white ? 1 : -1
   end
 
   def to_s
     @sprite.encode('utf-8')
-  end
-
-  def direction
-    @color == :white ? 1 : -1
   end
 
 end

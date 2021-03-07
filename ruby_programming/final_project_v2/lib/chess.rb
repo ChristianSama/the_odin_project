@@ -24,7 +24,9 @@ class Chess
           next
         end
         @board.select_piece(translate(input))
+        break
       end
+      @board.print_board
       puts 'Input the coordinates of a square to move'
       loop do
         input = gets.chomp
@@ -36,6 +38,7 @@ class Chess
           next
         end
         @board.move(translate(input))
+        break
       end
       @current_player = @current_player == :white ? :black : :white
     end
@@ -51,8 +54,13 @@ class Chess
     (piece != nil && piece.color == @current_player) ? true : false
   end
 
+  
+
   def valid_move?(coord)
     #it's a coord from piece.moveset
+    if (@board.selected_piece.move_set.includes?(coord))
+      return true
+    end
     #doesn't have pieces inbetween (except knight)
     #if piece is captured, remove it
     #if under check must remove check
@@ -63,7 +71,7 @@ class Chess
   end
 
   def move(coord)
-    
+    @selected_piece.has_moved == true
   end
 
   def translate(alg_notation)

@@ -37,11 +37,15 @@ class Board
       puts '+'
       #print row
       print " #{8 - i} "
-      row.each do |col|
-        if (col.piece == nil)
+      row.each do |square|
+        if (square.piece == nil)
+          if (square.marked)
+            print "| #{square.mark} "
+            next
+          end
           print "|   "
         else
-          print "| #{col.piece} "
+          print "| #{square.piece} "
         end
       end
       puts '|'
@@ -55,13 +59,30 @@ class Board
   end
 
   def select_piece(coord)
-    @selected_piece = @data[coord[0]][coord[1]]
+    @selected_piece = @data[coord[0]][coord[1]].piece
+    mark_move_set
   end
 
   def get_square(coord)
     return @data[coord[0]][coord[1]]
   end
 
+  def mark_move_set
+    @selected_piece.move_set.each do |coord|
+      if (inside_board?(coord))
+        square = @data[coord[0]][coord[1]]
+        square.marked = true
+      end
+    end
+  end
 
+  def inside_board?(coord)
+    if (coord[0] >= 0 && coord[0] <= 8 &&
+        coord[1] >= 0 && coord[1] <= 8)
+      return true
+    else
+      return false
+    end
+  end
 
 end
