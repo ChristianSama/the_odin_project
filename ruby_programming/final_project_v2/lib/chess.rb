@@ -54,13 +54,12 @@ class Chess
     (piece != nil && piece.color == @current_player) ? true : false
   end
 
-  
-
   def valid_move?(coord)
     #it's a coord from piece.moveset
-    if (@board.selected_piece.move_set.includes?(coord))
+    if (@board.selected_piece.move_set.include?(coord))
       return true
     end
+    return false
     #doesn't have pieces inbetween (except knight)
     #if piece is captured, remove it
     #if under check must remove check
@@ -68,10 +67,6 @@ class Chess
     #if piece is pawn and reaches back rank, promote
     #if move is a castle
     #if move is checkmate or stalemate gameover
-  end
-
-  def move(coord)
-    @selected_piece.has_moved == true
   end
 
   def translate(alg_notation)

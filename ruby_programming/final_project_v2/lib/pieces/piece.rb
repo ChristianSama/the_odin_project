@@ -12,4 +12,9 @@ class Piece
     @sprite.encode('utf-8')
   end
 
+  def update_position(coord)
+    @position[0] = coord[0]
+    @position[1] = coord[1]
+  end
+
 end

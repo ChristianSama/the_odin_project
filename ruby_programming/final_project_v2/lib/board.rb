@@ -85,4 +85,13 @@ class Board
     end
   end
 
+  def move(coord)
+    to_square = get_square(coord)
+    to_square.piece = @selected_piece
+    from_square = get_square(@selected_piece.position)
+    from_square.piece = nil
+    @selected_piece.update_position(coord)
+    @selected_piece.has_moved == true
+  end
+
 end
