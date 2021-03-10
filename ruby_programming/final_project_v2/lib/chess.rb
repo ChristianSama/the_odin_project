@@ -14,6 +14,7 @@ class Chess
       @board.print_board
       puts "#{@current_player}'s turn"
       puts 'Input the coordinates of a piece to select it for example: D2'
+      #@board.get_square([3, 3]).piece.get_possible_moves(@board)
       loop do
         input = gets.chomp
         if (!valid_coordinate?(input))
@@ -55,8 +56,9 @@ class Chess
   end
 
   def valid_move?(coord)
+    piece = @board.selected_piece
     #it's a coord from piece.moveset
-    if (@board.selected_piece.move_set.include?(coord))
+    if (piece.move_set.include?(coord))
       return true
     end
     return false
@@ -68,6 +70,10 @@ class Chess
     #if move is a castle
     #if move is checkmate or stalemate gameover
   end
+
+  # def exposes_check?(coord)
+  #   @board.selected_piece
+  # end
 
   def translate(alg_notation)
     coord = alg_notation.split("")
