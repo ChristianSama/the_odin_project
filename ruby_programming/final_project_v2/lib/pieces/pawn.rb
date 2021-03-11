@@ -1,14 +1,11 @@
 class Pawn < Piece
 
-  attr_accessor :has_moved
-
   def initialize(color, position)
     super(color, position)
-    @has_moved = false
     @sprite = color == :white ? "\u265f" : "\u2659"
   end
 
-  def move_set
+  def get_possible_moves(board)
     moves = []
     #horizontal moves
     moves << [@position[0] + (1 * direction), @position[1]]

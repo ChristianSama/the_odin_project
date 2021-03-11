@@ -11,10 +11,11 @@ class Chess
   def start
     while(true)
       system "cls"
+
+      #selection phase
       @board.print_board
       puts "#{@current_player}'s turn"
       puts 'Input the coordinates of a piece to select it for example: D2'
-      #@board.get_square([3, 3]).piece.get_possible_moves(@board)
       loop do
         input = gets.chomp
         if (!valid_coordinate?(input))
@@ -25,10 +26,14 @@ class Chess
           next
         end
         @board.select_piece(translate(input))
+        @board.mark_possible_moves
         break
       end
+      
+      #move phase
       @board.print_board
       puts 'Input the coordinates of a square to move'
+      @board.unmark_possible_moves
       loop do
         input = gets.chomp
         if (!valid_coordinate?(input))
@@ -58,11 +63,12 @@ class Chess
   def valid_move?(coord)
     piece = @board.selected_piece
     #it's a coord from piece.moveset
-    if (piece.move_set.include?(coord))
+    #doesn't have pieces inbetween (except knight)
+    if (piece.get_possible_moves(@board).include?(coord))
       return true
     end
     return false
-    #doesn't have pieces inbetween (except knight)
+    
     #if piece is captured, remove it
     #if under check must remove check
     #it must not expose check
@@ -71,9 +77,9 @@ class Chess
     #if move is checkmate or stalemate gameover
   end
 
-  # def exposes_check?(coord)
-  #   @board.selected_piece
-  # end
+  def exposes_check?(coord)
+    @board.selected_piece
+  end
 
   def translate(alg_notation)
     coord = alg_notation.split("")
