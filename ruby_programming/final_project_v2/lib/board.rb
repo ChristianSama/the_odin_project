@@ -4,14 +4,14 @@ Dir.glob(project_root + '/pieces/*') {|file| require file}
 
 class Board
   
-  attr_reader :data, :selected_piece
+  attr_reader :data, :selected_piece, :white_king, :black_king
 
   def initialize
     @data = Array.new(8) {Array.new(8) {Square.new}}
     setup_pieces(:white)
     setup_pieces(:black)
-    @data[0][4].piece = King.new(:white, [0, 4])
-    @data[7][3].piece = King.new(:black, [7, 3])
+    @white_king = @data[0][4].piece = King.new(:white, [0, 4])
+    @black_king = @data[7][3].piece = King.new(:black, [7, 3])
   end
 
   def setup_pieces(color)
@@ -83,27 +83,63 @@ class Board
   def move(coord)
     to_square = get_square(coord)
     if (to_square.piece != nil)
-      @selected_piece.captured << to_square.piece
+      capture = to_square.piece
+      #@selected_piece.captured << capture
     end
     to_square.piece = @selected_piece
     from_square = get_square(@selected_piece.position)
     from_square.piece = nil
     @selected_piece.update_position(coord)
     @selected_piece.has_moved == true
+    capture
   end
 
-  def mark_possible_moves
-    @selected_piece.get_possible_moves(self).each do |move|
+  def mark_moves(moves)
+    moves.each do |move|
       square = get_square(move)
       square.marked = true if square.piece == nil
     end
   end
 
-  def unmark_possible_moves
-    @selected_piece.get_possible_moves(self).each do |move|
+  def unmark_moves(moves)
+    moves.each do |move|
       square = get_square(move)
       square.marked = false if square.piece == nil
     end
   end
+
+  def get_unexposed_moves(moves)
+    unexposed_moves = []
+    moves.each do |m|
+      captured_piece = move(m)
+      if (!king_in_check?(@selected_piece.color))
+        unexposed_moves << m
+      end
+      if (captured_piece)
+        get_square(m).piece = captured_piece
+      end
+    end
+    get_square(@selected_piece.position).piece = @selected_piece
+    unexposed_moves
+  end
+
+  def king_in_check?(color)
+    king = color == :white ? @white_king : @black_king
+    squares = @data.flatten
+    squares.any do |sq|
+      next if sq.piece == nil
+      next if sq.piece.color == color
+      sq.piece.get_possible_moves(self).include?(king)
+    end
+  end
+
+  # def get_capturable_pieces(moves)
+  #   pieces = []
+  #   moves.each do |move|
+  #     piece = get_square(move).piece  
+  #     pieces << piece
+  #   end
+  #   pieces
+  # end
 
 end

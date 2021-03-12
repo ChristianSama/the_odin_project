@@ -28,15 +28,15 @@ class Bishop < Piece
     possible_moves
   end
 
-  def get_capturable_pieces(board)
-    pieces = []
-    get_possible_moves(board).each do |move|
-      piece = board.get_square(move).piece  
-      if (piece.color != @color)
-        pieces << piece
-      end
-    end
-    pieces
-  end
+  # def get_capturable_pieces(board)
+  #   pieces = []
+  #   get_possible_moves(board).each do |move|
+  #     piece = board.get_square(move).piece  
+  #     if (piece.color != @color)
+  #       pieces << piece
+  #     end
+  #   end
+  #   pieces
+  # end
 
 end

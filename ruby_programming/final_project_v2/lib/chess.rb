@@ -26,14 +26,14 @@ class Chess
           next
         end
         @board.select_piece(translate(input))
-        @board.mark_possible_moves
+        @board.mark_moves(@board.selected_piece.get_possible_moves(@board))
         break
       end
       
       #move phase
       @board.print_board
       puts 'Input the coordinates of a square to move'
-      @board.unmark_possible_moves
+      @board.unmark_moves(@board.selected_piece.get_possible_moves(@board))
       loop do
         input = gets.chomp
         if (!valid_coordinate?(input))
@@ -77,9 +77,7 @@ class Chess
     #if move is checkmate or stalemate gameover
   end
 
-  def exposes_check?(coord)
-    @board.selected_piece
-  end
+
 
   def translate(alg_notation)
     coord = alg_notation.split("")
