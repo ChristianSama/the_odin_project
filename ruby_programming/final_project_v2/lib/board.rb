@@ -12,22 +12,24 @@ class Board
     setup_pieces(:black)
     @white_king = @data[0][4].piece = King.new(:white, [0, 4])
     @black_king = @data[7][3].piece = King.new(:black, [7, 3])
+    @data[1][5].piece = Bishop.new(:white, [1, 5])
+    @data[3][7].piece = Bishop.new(:black, [3, 7])
   end
 
   def setup_pieces(color)
     row = color == :white ? 0 : 7
     # @data[row][0].piece = Rook.new(color)
     # @data[row][1].piece = Knight.new(color)
-    @data[row][2].piece = Bishop.new(color, [row, 2])
+    # @data[row][2].piece = Bishop.new(color, [row, 2])
     # @data[row][3].piece = Queen.new(color)
-    @data[row][5].piece = Bishop.new(color, [row, 5])
+    # @data[row][5].piece = Bishop.new(color, [row, 5])
     # @data[row][6].piece = Knight.new(color)
     # @data[row][7].piece = Rook.new(color)
 
-    row = color == :white ? 1 : 6
-    8.times do |i|
-      @data[row][i].piece = Pawn.new(color, [row, i])
-    end
+    # row = color == :white ? 1 : 6
+    # 8.times do |i|
+    #   @data[row][i].piece = Pawn.new(color, [row, i])
+    # end
   end
 
   def print_board
@@ -47,7 +49,7 @@ class Board
           print "|   "
         else
           if (square.marked)
-            print "|(#{square.piece})|"
+            print "|(#{square.piece})"
             next
           end
           print "| #{square.piece} "
@@ -65,6 +67,8 @@ class Board
 
   def select_piece(coord)
     @selected_piece = get_square(coord).piece
+    valid_moves = get_unexposed_moves(@selected_piece.get_possible_moves(self))
+    mark_moves(valid_moves)
   end
 
   def get_square(coord)
@@ -97,19 +101,20 @@ class Board
   def mark_moves(moves)
     moves.each do |move|
       square = get_square(move)
-      square.marked = true if square.piece == nil
+      square.marked = true
     end
   end
 
   def unmark_moves(moves)
     moves.each do |move|
       square = get_square(move)
-      square.marked = false if square.piece == nil
+      square.marked = false
     end
   end
 
   def get_unexposed_moves(moves)
     unexposed_moves = []
+    init_pos = [@selected_piece.position[0], @selected_piece.position[1]]
     moves.each do |m|
       captured_piece = move(m)
       if (!king_in_check?(@selected_piece.color))
@@ -117,19 +122,23 @@ class Board
       end
       if (captured_piece)
         get_square(m).piece = captured_piece
+      else
+        get_square(m).piece = nil
       end
+      @selected_piece.update_position(init_pos)
+      p init_pos
     end
-    get_square(@selected_piece.position).piece = @selected_piece
+    get_square(init_pos).piece = @selected_piece
     unexposed_moves
   end
 
   def king_in_check?(color)
     king = color == :white ? @white_king : @black_king
     squares = @data.flatten
-    squares.any do |sq|
+    squares.any? do |sq|
       next if sq.piece == nil
       next if sq.piece.color == color
-      sq.piece.get_possible_moves(self).include?(king)
+      sq.piece.get_possible_moves(self).include?(king.position)
     end
   end
 

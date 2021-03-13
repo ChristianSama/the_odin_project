@@ -26,14 +26,12 @@ class Chess
           next
         end
         @board.select_piece(translate(input))
-        @board.mark_moves(@board.selected_piece.get_possible_moves(@board))
         break
       end
       
       #move phase
       @board.print_board
       puts 'Input the coordinates of a square to move'
-      @board.unmark_moves(@board.selected_piece.get_possible_moves(@board))
       loop do
         input = gets.chomp
         if (!valid_coordinate?(input))
@@ -62,13 +60,15 @@ class Chess
 
   def valid_move?(coord)
     piece = @board.selected_piece
-    #it's a coord from piece.moveset
-    #doesn't have pieces inbetween (except knight)
-    if (piece.get_possible_moves(@board).include?(coord))
+    valid_moves = @board.get_unexposed_moves(piece.get_possible_moves)
+    
+    if (valid_moves.include?(coord))
       return true
     end
     return false
     
+    #it's a coord from piece.moveset
+    #doesn't have pieces inbetween (except knight)
     #if piece is captured, remove it
     #if under check must remove check
     #it must not expose check
