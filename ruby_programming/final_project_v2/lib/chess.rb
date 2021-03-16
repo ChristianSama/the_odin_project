@@ -14,15 +14,18 @@ class Chess
 
       #selection phase
       @board.print_board
-      puts "#{@current_player}'s turn"
-      puts 'Input the coordinates of a piece to select it for example: D2'
+      puts "#{@current_player}'s turn."
+      puts 'Input the coordinates of a piece to select it for example: D2.'
       loop do
         input = gets.chomp
         if (!valid_coordinate?(input))
-          puts 'Invalid coordinate. Try again'
+          puts 'Invalid coordinate. Try again.'
           next
         elsif (!valid_selection?(translate(input)))
-          puts 'Invalid selection.'
+          puts 'Invalid selection. Try selecting one of your pieces.'
+          next
+        elsif (!has_valid_moves?(translate(input)))
+          puts 'Selected piece has no valid moves. Try again.'
           next
         end
         @board.select_piece(translate(input))
@@ -31,14 +34,14 @@ class Chess
       
       #move phase
       @board.print_board
-      puts 'Input the coordinates of a square to move'
+      puts 'Input the coordinates of a square to move.'
       loop do
         input = gets.chomp
         if (!valid_coordinate?(input))
-          puts 'Invalid coordinate. Try again'
+          puts 'Invalid coordinate. Try again.'
           next
         elsif (!valid_move?(translate(input)))
-          puts 'Invalid move. Try again'
+          puts 'Invalid move. Try again.'
           next
         end
         @board.move(@board.selected_piece, translate(input))
@@ -57,6 +60,11 @@ class Chess
   def valid_selection?(coord)
     piece = @board.get_square(coord).piece
     return false if (piece == nil || piece.color != @current_player)
+    return true
+  end
+
+  def has_valid_moves?(coord)
+    piece = @board.get_square(coord).piece
     valid_moves = @board.get_unexposed_moves(piece)
     return false if valid_moves.empty?
     return true

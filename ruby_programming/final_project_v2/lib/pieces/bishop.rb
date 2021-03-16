@@ -6,10 +6,10 @@ class Bishop < Piece
   end
 
   def get_possible_moves(board)
-    diagonals = [1, -1]
+    axis = [1, -1]
     possible_moves = []
-    for j in diagonals do
-      for i in diagonals do
+    for j in axis do
+      for i in axis do
         move = @position
         loop do
           move = [move[0] + (i * @direction), move[1] + (j * @direction)]

@@ -15,6 +15,7 @@ class Board
     @black_king = @data[7][3].piece = King.new(:black, [7, 3])
     @data[1][5].piece = Bishop.new(:white, [1, 5])
     @data[3][7].piece = Bishop.new(:black, [3, 7])
+    @data[3][5].piece = Rook.new(:white, [3, 5])
   end
 
   def setup_pieces(color)
