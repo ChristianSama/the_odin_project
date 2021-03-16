@@ -4,7 +4,8 @@ Dir.glob(project_root + '/pieces/*') {|file| require file}
 
 class Board
   
-  attr_reader :data, :selected_piece, :white_king, :black_king
+  attr_reader :data, :white_king, :black_king
+  attr_accessor :selected_piece
 
   def initialize
     @data = Array.new(8) {Array.new(8) {Square.new}}
@@ -67,7 +68,7 @@ class Board
 
   def select_piece(coord)
     @selected_piece = get_square(coord).piece
-    valid_moves = get_unexposed_moves(@selected_piece.get_possible_moves(self))
+    valid_moves = get_unexposed_moves(@selected_piece)
     mark_moves(valid_moves)
   end
 
@@ -84,17 +85,17 @@ class Board
     end
   end
 
-  def move(coord)
+  def move(piece, coord)
     to_square = get_square(coord)
     if (to_square.piece != nil)
       capture = to_square.piece
-      #@selected_piece.captured << capture
+      #piece.captured << capture
     end
-    to_square.piece = @selected_piece
-    from_square = get_square(@selected_piece.position)
+    to_square.piece = piece
+    from_square = get_square(piece.position)
     from_square.piece = nil
-    @selected_piece.update_position(coord)
-    @selected_piece.has_moved == true
+    piece.update_position(coord)
+    piece.has_moved == true
     capture
   end
 
@@ -105,30 +106,33 @@ class Board
     end
   end
 
-  def unmark_moves(moves)
-    moves.each do |move|
-      square = get_square(move)
+  def unmark_moves
+    @data.flatten.each do |square|
       square.marked = false
     end
   end
 
-  def get_unexposed_moves(moves)
-    unexposed_moves = []
-    init_pos = [@selected_piece.position[0], @selected_piece.position[1]]
-    moves.each do |m|
-      captured_piece = move(m)
-      if (!king_in_check?(@selected_piece.color))
-        unexposed_moves << m
+  def get_unexposed_moves(piece)
+    init_pos = [piece.position[0], piece.position[1]]
+    unexposed_moves = piece.get_possible_moves(self)
+    i = 0
+    loop do
+      m = unexposed_moves[i]
+      captured_piece = move(piece, m)
+      if (king_in_check?(piece.color))
+        unexposed_moves.delete(m)
+        i -= 1
       end
       if (captured_piece)
         get_square(m).piece = captured_piece
       else
         get_square(m).piece = nil
       end
-      @selected_piece.update_position(init_pos)
-      p init_pos
+      piece.update_position(init_pos)
+      i += 1
+      break if i >= unexposed_moves.length
     end
-    get_square(init_pos).piece = @selected_piece
+    get_square(init_pos).piece = piece
     unexposed_moves
   end
 

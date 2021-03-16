@@ -22,7 +22,7 @@ class Chess
           puts 'Invalid coordinate. Try again'
           next
         elsif (!valid_selection?(translate(input)))
-          puts 'Invalid selection. Try selecting one of your pieces'
+          puts 'Invalid selection.'
           next
         end
         @board.select_piece(translate(input))
@@ -41,7 +41,8 @@ class Chess
           puts 'Invalid move. Try again'
           next
         end
-        @board.move(translate(input))
+        @board.move(@board.selected_piece, translate(input))
+        @board.unmark_moves
         break
       end
       @current_player = @current_player == :white ? :black : :white
@@ -55,12 +56,15 @@ class Chess
 
   def valid_selection?(coord)
     piece = @board.get_square(coord).piece
-    (piece != nil && piece.color == @current_player) ? true : false
+    return false if (piece == nil || piece.color != @current_player)
+    valid_moves = @board.get_unexposed_moves(piece)
+    return false if valid_moves.empty?
+    return true
   end
 
   def valid_move?(coord)
     piece = @board.selected_piece
-    valid_moves = @board.get_unexposed_moves(piece.get_possible_moves)
+    valid_moves = @board.get_unexposed_moves(piece)
     
     if (valid_moves.include?(coord))
       return true
