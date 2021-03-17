@@ -15,7 +15,6 @@ class Board
     @black_king = @data[7][3].piece = King.new(:black, [7, 3])
     @data[1][5].piece = Bishop.new(:white, [1, 5])
     @data[3][7].piece = Bishop.new(:black, [3, 7])
-    @data[3][5].piece = Rook.new(:white, [3, 5])
   end
 
   def setup_pieces(color)
@@ -26,7 +25,7 @@ class Board
     # @data[row][3].piece = Queen.new(color)
     # @data[row][5].piece = Bishop.new(color, [row, 5])
     # @data[row][6].piece = Knight.new(color)
-    # @data[row][7].piece = Rook.new(color)
+    @data[row][7].piece = Rook.new(color, [row, 7])
 
     # row = color == :white ? 1 : 6
     # 8.times do |i|
@@ -77,14 +76,7 @@ class Board
     return @data[coord[0]][coord[1]]
   end
 
-  def inside_board?(coord)
-    if (coord[0] >= 0 && coord[0] <= 7 &&
-        coord[1] >= 0 && coord[1] <= 7)
-      return true
-    else
-      return false
-    end
-  end
+  
 
   def move(piece, coord)
     to_square = get_square(coord)

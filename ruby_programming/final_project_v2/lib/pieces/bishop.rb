@@ -1,19 +1,20 @@
-class Bishop < Piece
+require_relative '../linear_movement'
 
+class Bishop < Piece
+  include Linear_movement
+  
   def initialize(color, position)
     super(color, position)
     @sprite = color == :white ? "\u265d" : "\u2657"
   end
 
   def get_possible_moves(board)
-    axis = [1, -1]
     possible_moves = []
-    for j in axis do
-      for i in axis do
-        move = @position
-        loop do
-          move = [move[0] + (i * @direction), move[1] + (j * @direction)]
-          break if (!board.inside_board?(move))
+    axis = [1, -1]
+    for y in axis do
+      for x in axis do
+        diagonal = linear_moves(self, [x, y])
+        diagonal.each do |move|
           piece = board.get_square(move).piece
           if (piece != nil)
             if (piece.color != @color)
@@ -27,16 +28,5 @@ class Bishop < Piece
     end
     possible_moves
   end
-
-  # def get_capturable_pieces(board)
-  #   pieces = []
-  #   get_possible_moves(board).each do |move|
-  #     piece = board.get_square(move).piece  
-  #     if (piece.color != @color)
-  #       pieces << piece
-  #     end
-  #   end
-  #   pieces
-  # end
 
 end
