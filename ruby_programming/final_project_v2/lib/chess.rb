@@ -89,8 +89,6 @@ class Chess
     #if move is checkmate or stalemate gameover
   end
 
-
-
   def translate(alg_notation)
     coord = alg_notation.split("")
     temp = coord[0] #a

@@ -1,4 +1,5 @@
 class King < Piece
+  include linear_movement
 
   def initialize(color, position)
     super(color, position)

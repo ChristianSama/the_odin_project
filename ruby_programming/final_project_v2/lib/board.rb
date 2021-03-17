@@ -76,8 +76,6 @@ class Board
     return @data[coord[0]][coord[1]]
   end
 
-  
-
   def move(piece, coord)
     to_square = get_square(coord)
     if (to_square.piece != nil)
@@ -138,14 +136,5 @@ class Board
       sq.piece.get_possible_moves(self).include?(king.position)
     end
   end
-
-  # def get_capturable_pieces(moves)
-  #   pieces = []
-  #   moves.each do |move|
-  #     piece = get_square(move).piece  
-  #     pieces << piece
-  #   end
-  #   pieces
-  # end
 
 end

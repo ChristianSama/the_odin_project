@@ -4,7 +4,7 @@ module Linear_movement
     moves = []
     move = piece.position
     num_squares = 8 if (num_squares == nil)
-    while (moves.length <= num_squares)
+    while (moves.length < num_squares)
       move = [move[0] + (axis[0] * piece.direction), move[1] + (axis[1] * piece.direction)]
       break if (!inside_board?(move))
       moves << move
