@@ -106,6 +106,8 @@ class Board
   def get_unexposed_moves(piece)
     init_pos = [piece.position[0], piece.position[1]]
     unexposed_moves = piece.get_possible_moves(self)
+    return unexposed_moves if unexposed_moves.empty?
+
     i = 0
     loop do
       m = unexposed_moves[i]

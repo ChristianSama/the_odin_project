@@ -13,8 +13,8 @@ class Bishop < Piece
     axis = [1, -1]
     for y in axis do
       for x in axis do
-        diagonal = linear_moves(self, [x, y])
-        diagonal.each do |move|
+        moves = linear_moves(self, [x, y])
+        moves.each do |move|
           piece = board.get_square(move).piece
           if (piece != nil)
             if (piece.color != @color)

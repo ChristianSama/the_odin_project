@@ -10,8 +10,8 @@ class Rook < Piece
     possible_moves = []
     axis = [[1, 0], [0, 1], [-1, 0], [0, -1]]
     axis.each do |ax|
-      horizontal = linear_moves(self, [ax[0], ax[1]])
-      horizontal.each do |move|
+      moves = linear_moves(self, [ax[0], ax[1]])
+      moves.each do |move|
         piece = board.get_square(move).piece
         if (piece != nil)
           if (piece.color != @color)
