@@ -25,6 +25,10 @@ class King < Piece
         possible_moves << move
       end
     end
+    board.castle_moves.each { |m| possible_moves << m}
     possible_moves
   end
+
+
+
 end

@@ -139,4 +139,46 @@ class Board
     end
   end
 
+  def castle_moves(color) #could create can_castle method to simplify
+    moves = []
+    king = color == :white ? @white_king : @black_king
+    left_rook = get_square([0, king.position[1] - (4 * king.direction)]).piece
+    right_rook = get_square([0, king.position[1] + (3 * king.direction)]).piece
+    if (!king.has_moved)
+      if (!left_rook.has_moved)
+        left_moves = king.linear_moves(king, [0, -1], 3)
+        if (left_moves.all? { |m| free?(m)})
+          moves + left_moves
+        end
+      end
+      if (!right_rook.has_moved)
+        right_moves = king.linear_moves(king, [0, 1], 2)
+        if (right_moves.all? { |m| free?(m)})
+          moves + right_moves
+        end
+      end
+    end
+    moves
+  end
+
+  def can_castle?(king, dir) #@white_king, -1 ---> can castle left?
+    x_offset = dir == 1 ? 3 : 4
+    row = king.color == :white ? 0 : 7
+    rook = get_square([row, king.position[1] + (x_offset * dir * king.direction)]).piece
+
+    if (!king.has_moved)
+      if (!rook.has_moved)
+        moves = king.linear_moves(king, [0, -1], x_offset - 1)
+        if (moves.all? { |m| free?(m)})
+          return true
+        end
+      end
+    end
+  end
+
+  def free?(coord)
+    return true if get_square(coord).piece == nil
+    return false
+  end
+
 end
