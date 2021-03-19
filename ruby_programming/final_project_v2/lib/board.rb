@@ -12,7 +12,7 @@ class Board
     setup_pieces(:white)
     setup_pieces(:black)
     @white_king = @data[0][4].piece = King.new(:white, [0, 4])
-    @black_king = @data[7][3].piece = King.new(:black, [7, 3])
+    @black_king = @data[6][0].piece = King.new(:black, [6, 0])
     @data[1][5].piece = Bishop.new(:white, [1, 5])
     @data[3][7].piece = Bishop.new(:black, [3, 7])
   end
@@ -164,15 +164,33 @@ class Board
   def can_castle?(king, dir) #@white_king, -1 ---> can castle left?
     x_offset = dir == 1 ? 3 : 4
     row = king.color == :white ? 0 : 7
-    rook = get_square([row, king.position[1] + (x_offset * dir * king.direction)]).piece
+    col = king.position[1] + (x_offset * dir * king.direction)
+    rook = get_square([row, col]).piece
 
-    if (!king.has_moved)
-      if (!rook.has_moved)
-        moves = king.linear_moves(king, [0, -1], x_offset - 1)
-        if (moves.all? { |m| free?(m)})
-          return true
+    return false if (rook == nil)
+    return false if (king.has_moved || rook.has_moved)
+    return false if (king_in_check?(king.color))
+
+    moves = king.linear_moves(king, [0, dir], x_offset - 1)
+    moves.each do |m|
+      if (!free?(m))
+        return false
+      end
+      if (dir == -1 && m != moves.last)
+        if (under_attack?(king.color, m))
+          return false
         end
       end
+    end
+    return true
+  end
+
+  def under_attack?(color, coord) #friendly color
+    squares = @data.flatten
+    squares.any? do |sq|
+      next if sq.piece == nil
+      next if sq.piece.color == color
+      sq.piece.get_possible_moves(self).include?(coord)
     end
   end
 

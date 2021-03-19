@@ -28,7 +28,9 @@ class Chess
           puts 'Selected piece has no valid moves. Try again.'
           next
         end
+        
         @board.select_piece(translate(input))
+        p @board.can_castle?(@board.white_king, 1)
         break
       end
       
