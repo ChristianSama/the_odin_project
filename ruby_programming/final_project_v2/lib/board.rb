@@ -76,7 +76,7 @@ class Board
     return @data[coord[0]][coord[1]]
   end
 
-  def move(piece, coord)
+  def move(piece, coord, true_move = false)
     to_square = get_square(coord)
     if (to_square.piece != nil)
       capture = to_square.piece
@@ -86,7 +86,7 @@ class Board
     from_square = get_square(piece.position)
     from_square.piece = nil
     piece.update_position(coord)
-    piece.has_moved == true
+    piece.has_moved = true if true_move == true
     capture
   end
 
@@ -139,37 +139,32 @@ class Board
     end
   end
 
-  def castle_moves(color) #could create can_castle method to simplify
+  def castle_moves(king) #could create can_castle method to simplify
     moves = []
-    king = color == :white ? @white_king : @black_king
-    left_rook = get_square([0, king.position[1] - (4 * king.direction)]).piece
-    right_rook = get_square([0, king.position[1] + (3 * king.direction)]).piece
-    if (!king.has_moved)
-      if (!left_rook.has_moved)
-        left_moves = king.linear_moves(king, [0, -1], 3)
-        if (left_moves.all? { |m| free?(m)})
-          moves + left_moves
-        end
-      end
-      if (!right_rook.has_moved)
-        right_moves = king.linear_moves(king, [0, 1], 2)
-        if (right_moves.all? { |m| free?(m)})
-          moves + right_moves
-        end
-      end
+    row = king.position[0]
+    if (can_castle?(king, 1))
+      col = color == :white ? 6 : 1
+      moves << [row, col]
+    end
+    if (can_castle?(king, -1))
+      col = color == :white ? 2 : 5
+      moves << [row, col]
     end
     moves
   end
 
   def can_castle?(king, dir) #@white_king, -1 ---> can castle left?
+
+    return false if (king.has_moved)
+    return false if (king_in_check?(king.color))
+
     x_offset = dir == 1 ? 3 : 4
-    row = king.color == :white ? 0 : 7
+    row = king.position[0]
     col = king.position[1] + (x_offset * dir * king.direction)
     rook = get_square([row, col]).piece
 
+    return false if (rook.has_moved)
     return false if (rook == nil)
-    return false if (king.has_moved || rook.has_moved)
-    return false if (king_in_check?(king.color))
 
     moves = king.linear_moves(king, [0, dir], x_offset - 1)
     moves.each do |m|
