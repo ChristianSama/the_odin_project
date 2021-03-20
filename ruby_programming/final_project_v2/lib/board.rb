@@ -135,7 +135,7 @@ class Board
     squares.any? do |sq|
       next if sq.piece == nil
       next if sq.piece.color == color
-      sq.piece.get_possible_moves(self).include?(king.position)
+      sq.piece.move_set(self).include?(king.position)
     end
   end
 
@@ -143,11 +143,11 @@ class Board
     moves = []
     row = king.position[0]
     if (can_castle?(king, 1))
-      col = color == :white ? 6 : 1
+      col = king.color == :white ? 6 : 1
       moves << [row, col]
     end
     if (can_castle?(king, -1))
-      col = color == :white ? 2 : 5
+      col = king.color == :white ? 2 : 5
       moves << [row, col]
     end
     moves
@@ -163,8 +163,9 @@ class Board
     col = king.position[1] + (x_offset * dir * king.direction)
     rook = get_square([row, col]).piece
 
-    return false if (rook.has_moved)
     return false if (rook == nil)
+    return false if (rook.has_moved)
+
 
     moves = king.linear_moves(king, [0, dir], x_offset - 1)
     moves.each do |m|
@@ -185,7 +186,7 @@ class Board
     squares.any? do |sq|
       next if sq.piece == nil
       next if sq.piece.color == color
-      sq.piece.get_possible_moves(self).include?(coord)
+      sq.piece.move_set(self).include?(coord)
     end
   end
 

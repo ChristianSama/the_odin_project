@@ -9,6 +9,10 @@ class Bishop < Piece
   end
 
   def get_possible_moves(board)
+    move_set(board)
+  end
+
+  def move_set(board)
     possible_moves = []
     axis = [1, -1]
     for y in axis do

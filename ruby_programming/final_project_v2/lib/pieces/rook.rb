@@ -7,6 +7,10 @@ class Rook < Piece
   end
 
   def get_possible_moves(board)
+    move_set(board)
+  end
+
+  def move_set(board)
     possible_moves = []
     axis = [[1, 0], [0, 1], [-1, 0], [0, -1]]
     axis.each do |ax|
