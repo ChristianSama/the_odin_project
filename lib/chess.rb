@@ -73,17 +73,17 @@ class Chess
   def valid_move?(coord)
     piece = @board.selected_piece
     valid_moves = @board.get_unexposed_moves(piece)
-    
-    if (valid_moves.include?(coord))
-      return true
-    end
-    return false
-    
+
     #it's a coord from piece.moveset
     #doesn't have pieces inbetween (except knight)
     #if piece is captured, remove it
     #if under check must remove check
     #it must not expose check
+    if (valid_moves.include?(coord))
+      return true
+    end
+    return false
+
     #if piece is pawn and reaches back rank, promote
     #if move is a castle
     #if move is checkmate or stalemate gameover

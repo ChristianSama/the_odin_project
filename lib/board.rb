@@ -78,11 +78,11 @@ class Board
 
   def move(piece, coord, true_move = false)
     if (piece.is_a?(King))
-      if (!castle_moves(piece).empty?)
-        if (coord == [0, 2] && true_move)
+      if (!castle_moves(piece).empty? && true_move)
+        if (coord == [0, 2])
           rook = get_corner_piece(piece.color, -1)
           move(rook, [coord[0], coord[1] + 1], true)
-        elsif (coord == [0, 6] && true_move)
+        elsif (coord == [0, 6])
           rook = get_corner_piece(piece.color, 1)
           move(rook, [coord[0], coord[1] - 1], true)
         end
@@ -152,7 +152,7 @@ class Board
     end
   end
 
-  def castle_moves(king) #could create can_castle method to simplify
+  def castle_moves(king)
     moves = []
     row = king.position[0]
     if (can_castle?(king, 1))
