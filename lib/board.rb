@@ -77,17 +77,17 @@ class Board
   end
 
   def move(piece, coord, true_move = false)
-    # if (piece.is_a?(King))
-    #   if (!castle_moves(piece).empty?)
-    #     if (coord == [0, 2])
-    #       rook = get_corner_piece(piece.color, -1)
-    #       move(rook, [coord[0], coord[1] + 1], true)
-    #     elsif (coord == [0, 6])
-    #       rook = get_corner_piece(piece.color, 1)
-    #       move(rook, [coord[0], coord[1] - 1], true)
-    #     end
-    #   end
-    # end
+    if (piece.is_a?(King))
+      if (!castle_moves(piece).empty?)
+        if (coord == [0, 2] && true_move)
+          rook = get_corner_piece(piece.color, -1)
+          move(rook, [coord[0], coord[1] + 1], true)
+        elsif (coord == [0, 6] && true_move)
+          rook = get_corner_piece(piece.color, 1)
+          move(rook, [coord[0], coord[1] - 1], true)
+        end
+      end
+    end
     to_square = get_square(coord)
     if (to_square.piece != nil)
       capture = to_square.piece
@@ -201,7 +201,7 @@ class Board
     else
       col = side == 1 ? 0 : 7
     end
-    get_square([row, col])
+    get_square([row, col]).piece
   end
 
   def under_attack?(color, coord) #friendly color
