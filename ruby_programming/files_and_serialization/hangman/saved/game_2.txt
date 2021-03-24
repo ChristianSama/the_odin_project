@@ -1,1 +1,0 @@
-{"game_id":2,"tries":4,"incorrect_guesses":["x","y","z","z","w","y"],"placeholder":["c","e","s","a","r","i","a","_"],"word":"_______n"}
