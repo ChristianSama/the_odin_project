@@ -91,7 +91,6 @@ class Board
     to_square = get_square(coord)
     if (to_square.piece != nil)
       capture = to_square.piece
-      #piece.captured << capture
     end
     
     to_square.piece = piece
@@ -116,17 +115,18 @@ class Board
     end
   end
 
-  def get_unexposed_moves(piece)
+  def get_valid_moves(piece)
     init_pos = [piece.position[0], piece.position[1]]
-    unexposed_moves = piece.get_possible_moves(self)
-    return unexposed_moves if unexposed_moves.empty?
+    valid_moves = piece.get_possible_moves(self)
+    return valid_moves if valid_moves.empty?
 
+    #check if one of the moves exposes check
     i = 0
-    loop do
-      m = unexposed_moves[i]
+    while (i < valid_moves.length)
+      m = valid_moves[i]
       captured_piece = move(piece, m)
       if (king_in_check?(piece.color))
-        unexposed_moves.delete(m)
+        valid_moves.delete(m)
         i -= 1
       end
       if (captured_piece)
@@ -136,10 +136,14 @@ class Board
       end
       piece.update_position(init_pos)
       i += 1
-      break if i >= unexposed_moves.length
     end
     get_square(init_pos).piece = piece
-    unexposed_moves
+
+    #castle moves
+    if (piece.is_a?(King))
+      valid_moves += castle_moves(piece)
+    end
+    valid_moves
   end
 
   def king_in_check?(color)
@@ -148,7 +152,7 @@ class Board
     squares.any? do |sq|
       next if sq.piece == nil
       next if sq.piece.color == color
-      sq.piece.move_set(self).include?(king.position)
+      sq.piece.get_possible_moves(self).include?(king.position)
     end
   end
 
@@ -209,7 +213,7 @@ class Board
     squares.any? do |sq|
       next if sq.piece == nil
       next if sq.piece.color == color
-      sq.piece.move_set(self).include?(coord)
+      sq.piece.get_possible_moves(self).include?(coord)
     end
   end
 

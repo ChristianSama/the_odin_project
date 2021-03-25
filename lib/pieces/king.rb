@@ -9,12 +9,6 @@ class King < Piece
   end
 
   def get_possible_moves(board)
-    possible_moves = move_set(board)
-    board.castle_moves(self).each { |m| possible_moves << m}
-    possible_moves
-  end
-
-  def move_set(board)
     possible_moves = []
     axis = [[1, 1], [1, -1], [-1, 1], [-1, -1],
             [1, 0], [0, 1], [-1, 0], [0, -1]]

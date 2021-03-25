@@ -29,7 +29,7 @@ class Chess
           next
         end
         selection = @board.select_piece(translate(input))
-        valid_moves = @board.get_unexposed_moves(selection)
+        valid_moves = @board.get_valid_moves(selection)
 
         if (valid_moves.empty?)
           puts 'Selected piece has no valid moves. Try again.'
