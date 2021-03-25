@@ -1,0 +1,13 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    width: 200px;
+}
+
+.winner {
+    font-size: 30px;
+    color: red;
+}
