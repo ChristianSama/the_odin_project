@@ -7,10 +7,13 @@ class Chess
     @board = Board.new
     @current_player = :white
   end
-
+  
   def start
-    while(true)
+  while(true)
+
       system "cls"
+      selection = nil
+      valid_moves = nil
 
       #selection phase
       @board.print_board
@@ -24,11 +27,15 @@ class Chess
         elsif (!valid_selection?(translate(input)))
           puts 'Invalid selection. Try selecting one of your pieces.'
           next
-        elsif (!has_valid_moves?(translate(input)))
+        end
+        selection = @board.select_piece(translate(input))
+        valid_moves = @board.get_unexposed_moves(selection)
+
+        if (valid_moves.empty?)
           puts 'Selected piece has no valid moves. Try again.'
           next
         end
-        @board.select_piece(translate(input))
+        @board.mark_moves(valid_moves)
         break
       end
       
@@ -40,7 +47,7 @@ class Chess
         if (!valid_coordinate?(input))
           puts 'Invalid coordinate. Try again.'
           next
-        elsif (!valid_move?(translate(input)))
+        elsif (!valid_moves.include?(translate(input)))
           puts 'Invalid move. Try again.'
           next
         end
@@ -63,31 +70,31 @@ class Chess
     return true
   end
 
-  def has_valid_moves?(coord)
-    piece = @board.get_square(coord).piece
-    valid_moves = @board.get_unexposed_moves(piece)
-    return false if valid_moves.empty?
-    return true
-  end
+  # def has_valid_moves?(coord)
+  #   piece = @board.get_square(coord).piece
+  #   valid_moves = @board.get_unexposed_moves(piece)
+  #   return false if valid_moves.empty?
+  #   return true
+  # end
 
-  def valid_move?(coord)
-    piece = @board.selected_piece
-    valid_moves = @board.get_unexposed_moves(piece)
+  # def valid_move?(coord)
+  #   piece = @board.selected_piece
+  #   valid_moves = @board.get_unexposed_moves(piece)
 
-    #it's a coord from piece.moveset
-    #doesn't have pieces inbetween (except knight)
-    #if piece is captured, remove it
-    #if under check must remove check
-    #it must not expose check
-    if (valid_moves.include?(coord))
-      return true
-    end
-    return false
+  #   #it's a coord from piece.moveset
+  #   #doesn't have pieces inbetween (except knight)
+  #   #if piece is captured, remove it
+  #   #if under check must remove check
+  #   #it must not expose check
+  #   if (valid_moves.include?(coord))
+  #     return true
+  #   end
+  #   return false
 
-    #if piece is pawn and reaches back rank, promote
-    #if move is a castle
-    #if move is checkmate or stalemate gameover
-  end
+  #   #if piece is pawn and reaches back rank, promote
+  #   #if move is a castle
+  #   #if move is checkmate or stalemate gameover
+  # end
 
   def translate(alg_notation)
     coord = alg_notation.split("")

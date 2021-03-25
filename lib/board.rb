@@ -67,9 +67,9 @@ class Board
   end
 
   def select_piece(coord)
-    @selected_piece = get_square(coord).piece
-    valid_moves = get_unexposed_moves(@selected_piece)
-    mark_moves(valid_moves)
+    piece = get_square(coord).piece
+    @selected_piece = piece
+    return piece
   end
 
   def get_square(coord)
