@@ -1,7 +1,7 @@
 require_relative 'board'
 
 class Chess
-  attr_reader :board, :current_player
+  attr_reader :board, :current_player, :win_condition
 
   def initialize
     @board = Board.new
@@ -9,7 +9,7 @@ class Chess
   end
   
   def start
-  while(true)
+  while(@win_condition == nil)
 
       system "cls"
       selection = nil
@@ -55,7 +55,13 @@ class Chess
         @board.unmark_moves
         break
       end
+      
       @current_player = @current_player == :white ? :black : :white
+      if (game_over?)
+        @board.print_board
+        puts "Congratulations! #{@current_player == :white ? :black : :white} player won by #{@win_condition}"
+      end
+      
     end
   end
 
@@ -81,20 +87,32 @@ class Chess
   #   piece = @board.selected_piece
   #   valid_moves = @board.get_unexposed_moves(piece)
 
-  #   #it's a coord from piece.moveset
-  #   #doesn't have pieces inbetween (except knight)
-  #   #if piece is captured, remove it
-  #   #if under check must remove check
-  #   #it must not expose check
+    #it's a coord from piece.moveset
+    #doesn't have pieces inbetween (except knight)
+    #if piece is captured, remove it
+    #if under check must remove check
+    #it must not expose check
+
   #   if (valid_moves.include?(coord))
   #     return true
   #   end
   #   return false
 
-  #   #if piece is pawn and reaches back rank, promote
-  #   #if move is a castle
-  #   #if move is checkmate or stalemate gameover
+    #if piece is pawn and reaches back rank, promote
+    #if move is a castle
+    #if move is checkmate or stalemate gameover
   # end
+
+  def game_over?
+    if (@board.checkmate?(@current_player))
+      @win_condition = :checkmate
+      return true
+    elsif (@board.stalemate?(@current_player))
+      @win_condition = :stalemate
+      return true
+    end
+    return false
+  end
 
   def translate(alg_notation)
     coord = alg_notation.split("")

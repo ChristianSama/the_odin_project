@@ -13,19 +13,22 @@ class Board
     setup_pieces(:black)
     @white_king = @data[0][4].piece = King.new(:white, [0, 4])
     @black_king = @data[6][0].piece = King.new(:black, [6, 0])
-    @data[1][5].piece = Bishop.new(:white, [1, 5])
-    @data[3][7].piece = Bishop.new(:black, [3, 7])
+    # @data[4][3].piece = Bishop.new(:black, [4, 3])
+    # @data[0][5].piece = Bishop.new(:white, [0, 5])
+    @data[7][6].piece = Rook.new(:black, [7, 6])
+    @data[1][0].piece = Rook.new(:black, [1, 0])
+
   end
 
   def setup_pieces(color)
     row = color == :white ? 0 : 7
-    # @data[row][0].piece = Rook.new(color)
+    # @data[row][0].piece = Rook.new(color, [row, 0])
     # @data[row][1].piece = Knight.new(color)
     # @data[row][2].piece = Bishop.new(color, [row, 2])
     # @data[row][3].piece = Queen.new(color)
     # @data[row][5].piece = Bishop.new(color, [row, 5])
     # @data[row][6].piece = Knight.new(color)
-    @data[row][7].piece = Rook.new(color, [row, 7])
+    # @data[row][7].piece = Rook.new(color, [row, 7])
 
     # row = color == :white ? 1 : 6
     # 8.times do |i|
@@ -148,12 +151,7 @@ class Board
 
   def king_in_check?(color)
     king = color == :white ? @white_king : @black_king
-    squares = @data.flatten
-    squares.any? do |sq|
-      next if sq.piece == nil
-      next if sq.piece.color == color
-      sq.piece.get_possible_moves(self).include?(king.position)
-    end
+    under_attack?(color, king.position)
   end
 
   def castle_moves(king)
@@ -178,21 +176,23 @@ class Board
     x_offset = dir == 1 ? 3 : 4
     row = king.position[0]
     col = king.position[1] + (x_offset * dir * king.direction)
-    rook = get_square([row, col])
+    rook_square = get_square([row, col])
     
-    return false if (rook == nil)
-    return false if (rook.piece == nil)
-    return false if (rook.piece.has_moved)
+    return false if (rook_square == nil)
+    return false if (rook_square.piece == nil)
+    return false if (rook_square.piece.has_moved)
 
     moves = king.linear_moves(king, [0, dir], x_offset - 1)
+
     moves.each do |m|
       if (!free?(m))
         return false
       end
-      if (dir == -1 && m != moves.last)
-        if (under_attack?(king.color, m))
-          return false
-        end
+
+      break if (dir == -1 && m == moves.last)
+
+      if (under_attack?(king.color, m))
+        return false
       end
     end
     return true
@@ -220,6 +220,20 @@ class Board
   def free?(coord)
     return true if get_square(coord).piece == nil
     return false
+  end
+
+  def checkmate?(color)
+    return false if (!king_in_check?(color))
+    stalemate?(color)
+  end
+
+  def stalemate?(color)
+    pieces = @data.flatten.map { |sq| sq.piece} 
+    pieces.compact!.filter! { |p| p.color == color}
+    pieces.each do |piece|
+      return false if !get_valid_moves(piece).empty?
+    end
+    return true
   end
 
 end
