@@ -3,6 +3,8 @@ require_relative '../movement'
 class Pawn < Piece
   include Movement
 
+  attr_accessor :en_passant_capture, :en_passant_piece
+
   def initialize(color, position)
     super(color, position)
     @sprite = color == :white ? "\u265f" : "\u2659"
@@ -31,6 +33,11 @@ class Pawn < Piece
         possible_moves << piece.position
       end
       next
+    end
+
+    #en passant capture
+    if en_passant_capture != nil
+      possible_moves << en_passant_capture 
     end
 
     possible_moves

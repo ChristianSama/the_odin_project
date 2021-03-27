@@ -19,10 +19,15 @@ class Board
     @data[1][0].piece = Rook.new(:black, [1, 0])
     @data[0][4].piece = Queen.new(:white, [0, 4])
     @data[0][5].piece = Knight.new(:white, [0, 5])
-    @data[1][4].piece = Pawn.new(:white, [1, 4])
-    @data[2][5].piece = Pawn.new(:black, [2, 5])
-    @data[2][3].piece = Pawn.new(:black, [2, 3])
+    @data[6][3].piece = Pawn.new(:black, [6, 3])
 
+    # pawn1 = Pawn.new(:black, [3, 5])
+    # pawn1.has_moved = true
+    # @data[3][5].piece = pawn1
+
+    pawn2 = Pawn.new(:white, [4, 4])
+    @data[4][4].piece = pawn2
+    pawn2.has_moved = true
 
   end
 
@@ -85,18 +90,7 @@ class Board
     return @data[coord[0]][coord[1]]
   end
 
-  def move(piece, coord, true_move = false)
-    if (piece.is_a?(King))
-      if (!castle_moves(piece).empty? && true_move)
-        if (coord == [0, 2])
-          rook = get_corner_piece(piece.color, -1)
-          move(rook, [coord[0], coord[1] + 1], true)
-        elsif (coord == [0, 6])
-          rook = get_corner_piece(piece.color, 1)
-          move(rook, [coord[0], coord[1] - 1], true)
-        end
-      end
-    end
+  def change_position(piece, coord)
     to_square = get_square(coord)
     if (to_square.piece != nil)
       capture = to_square.piece
@@ -107,8 +101,45 @@ class Board
     from_square.piece = nil
     
     piece.update_position(coord)
-    piece.has_moved = true if true_move == true
     capture
+  end
+
+  def move(piece, coord)
+
+    if (piece.is_a?(Pawn))
+      if (!piece.has_moved)
+        if (coord[0] == piece.position[0] + (2 * piece.direction))
+          adjacent_pawns = []
+          adjacent_pawns << get_square([coord[0], coord[1] + 1]).piece
+          adjacent_pawns << get_square([coord[0], coord[1] - 1]).piece
+
+          adjacent_pawns.compact.each do |pawn|
+            cap_coord = [piece.position[0] + (1 * piece.direction), piece.position[1]]
+            pawn.en_passant_capture = cap_coord
+          end
+        end
+      elsif (piece.en_passant_capture != nil)
+        if (coord == piece.en_passant_capture)
+          #capture pawn
+          get_square([coord[0] - (1 * piece.direction), coord[1]]).piece = nil
+        end
+      end
+    end
+
+    if (piece.is_a?(King))
+      if (!castle_moves(piece).empty?)
+        if (coord == [0, 2])
+          rook = get_corner_piece(piece.color, -1)
+          move(rook, [coord[0], coord[1] + 1])
+        elsif (coord == [0, 6])
+          rook = get_corner_piece(piece.color, 1)
+          move(rook, [coord[0], coord[1] - 1])
+        end
+      end
+    end
+
+    piece.has_moved = true
+    change_position(piece, coord)
   end
 
   def mark_moves(moves)
@@ -133,7 +164,7 @@ class Board
     i = 0
     while (i < valid_moves.length)
       m = valid_moves[i]
-      captured_piece = move(piece, m)
+      captured_piece = change_position(piece, m)
       if (king_in_check?(piece.color))
         valid_moves.delete(m)
         i -= 1

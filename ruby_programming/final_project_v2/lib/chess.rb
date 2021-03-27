@@ -51,7 +51,7 @@ class Chess
           puts 'Invalid move. Try again.'
           next
         end
-        @board.move(@board.selected_piece, translate(input), true)
+        @board.move(@board.selected_piece, translate(input))
         @board.unmark_moves
         break
       end
