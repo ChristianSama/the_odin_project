@@ -19,6 +19,10 @@ class Board
     @data[1][0].piece = Rook.new(:black, [1, 0])
     @data[0][4].piece = Queen.new(:white, [0, 4])
     @data[0][5].piece = Knight.new(:white, [0, 5])
+    @data[1][4].piece = Pawn.new(:white, [1, 4])
+    @data[2][5].piece = Pawn.new(:black, [2, 5])
+    @data[2][3].piece = Pawn.new(:black, [2, 3])
+
 
   end
 
@@ -222,6 +226,10 @@ class Board
   def free?(coord)
     return true if get_square(coord).piece == nil
     return false
+  end
+
+  def en_passant?
+    
   end
 
   def checkmate?(color)
