@@ -1,7 +1,7 @@
 require_relative 'board'
 
 class Chess
-  attr_reader :board, :current_player, :win_condition
+  attr_reader :board, :current_player
 
   def initialize
     @board = Board.new
@@ -9,7 +9,7 @@ class Chess
   end
   
   def start
-  while(@win_condition == nil)
+    while(true)
 
       system "cls"
       selection = nil
@@ -57,9 +57,15 @@ class Chess
       end
       
       @current_player = @current_player == :white ? :black : :white
-      if (game_over?)
+      
+      if (@board.checkmate?(@current_player))
         @board.print_board
-        puts "Congratulations! #{@current_player == :white ? :black : :white} player won by #{@win_condition}"
+        puts "Checkmate - #{@current_player == :white ? :black : :white} player won"
+        break
+      elsif(@board.stalemate?(@current_player))
+        @board.print_board
+        puts "Stalemate - #{@current_player} has no valid moves"
+        break
       end
       
     end
@@ -102,17 +108,6 @@ class Chess
     #if move is a castle
     #if move is checkmate or stalemate gameover
   # end
-
-  def game_over?
-    if (@board.checkmate?(@current_player))
-      @win_condition = :checkmate
-      return true
-    elsif (@board.stalemate?(@current_player))
-      @win_condition = :stalemate
-      return true
-    end
-    return false
-  end
 
   def translate(alg_notation)
     coord = alg_notation.split("")

@@ -1,7 +1,7 @@
-require_relative '../linear_movement'
+require_relative '../movement'
 
 class Bishop < Piece
-  include Linear_movement
+  include Movement
   
   def initialize(color, position)
     super(color, position)

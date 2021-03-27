@@ -1,5 +1,5 @@
 class Rook < Piece
-  include Linear_movement
+  include Movement
 
   def initialize(color, position)
     super(color, position)

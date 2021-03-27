@@ -1,11 +1,11 @@
 require_relative '../movement'
 
-class King < Piece
+class Queen < Piece
   include Movement
 
   def initialize(color, position)
     super(color, position)
-    @sprite = color == :white ? "\u265a" : "\u2654"
+    @sprite = color == :white ? "\u265b" : "\u2655"
   end
 
   def get_possible_moves(board)
@@ -13,7 +13,7 @@ class King < Piece
     axis = [[1, 1], [1, -1], [-1, 1], [-1, -1],
             [1, 0], [0, 1], [-1, 0], [0, -1]]
     axis.each do |ax|
-      moves = linear_moves(self, [ax[0], ax[1]], 1)
+      moves = linear_moves(self, [ax[0], ax[1]])
       moves.each do |move|
         piece = board.get_square(move).piece
         if (piece != nil)
@@ -27,5 +27,4 @@ class King < Piece
     end
     possible_moves
   end
-
 end

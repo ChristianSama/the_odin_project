@@ -11,12 +11,14 @@ class Board
     @data = Array.new(8) {Array.new(8) {Square.new}}
     setup_pieces(:white)
     setup_pieces(:black)
-    @white_king = @data[0][4].piece = King.new(:white, [0, 4])
+    @white_king = @data[0][6].piece = King.new(:white, [0, 6])
     @black_king = @data[6][0].piece = King.new(:black, [6, 0])
     # @data[4][3].piece = Bishop.new(:black, [4, 3])
     # @data[0][5].piece = Bishop.new(:white, [0, 5])
-    @data[7][6].piece = Rook.new(:black, [7, 6])
+    @data[7][5].piece = Rook.new(:black, [7, 5])
     @data[1][0].piece = Rook.new(:black, [1, 0])
+    @data[0][4].piece = Queen.new(:white, [0, 4])
+    @data[0][5].piece = Knight.new(:white, [0, 5])
 
   end
 
