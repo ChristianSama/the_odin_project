@@ -104,25 +104,53 @@ class Board
     capture
   end
 
+  def castle
+
+  end
+
+  def en_passant?(piece, coord)
+    return false if (!piece.is_a?(Pawn))
+    if (!piece.has_moved)
+      if (coord[0] == piece.position[0] + (2 * piece.direction))
+        adjacent_pawns = []
+        adjacent_pawns << get_square([coord[0], coord[1] + 1]).piece
+        adjacent_pawns << get_square([coord[0], coord[1] - 1]).piece
+        return true if !adjacent_pawns.compact.empty?
+      end
+    end
+    return false
+  end
+
+  def give_en_passant(piece, coord)
+    adjacent_pawns = []
+    adjacent_pawns << get_square([coord[0], coord[1] + 1]).piece
+    adjacent_pawns << get_square([coord[0], coord[1] - 1]).piece
+
+    adjacent_pawns.compact.each do |pawn|
+      cap_coord = [piece.position[0] + (1 * piece.direction), piece.position[1]]
+      pawn.en_passant_capture = cap_coord
+    end
+  end
+
+  def capture_en_passant(piece, coord)
+    get_square([coord[0] - (1 * piece.direction), coord[1]]).piece = nil
+  end
+
+  def remove_en_passant(color)
+    pieces = @data.flatten.map { |sq| sq.piece}
+    pieces.compact!.filter! { |piece| piece.is_a?(Pawn) && piece.color == color}
+    pieces.each do |piece|
+      piece.en_passant_capture = nil
+    end
+  end
+
   def move(piece, coord)
 
     if (piece.is_a?(Pawn))
-      if (!piece.has_moved)
-        if (coord[0] == piece.position[0] + (2 * piece.direction))
-          adjacent_pawns = []
-          adjacent_pawns << get_square([coord[0], coord[1] + 1]).piece
-          adjacent_pawns << get_square([coord[0], coord[1] - 1]).piece
-
-          adjacent_pawns.compact.each do |pawn|
-            cap_coord = [piece.position[0] + (1 * piece.direction), piece.position[1]]
-            pawn.en_passant_capture = cap_coord
-          end
-        end
-      elsif (piece.en_passant_capture != nil)
-        if (coord == piece.en_passant_capture)
-          #capture pawn
-          get_square([coord[0] - (1 * piece.direction), coord[1]]).piece = nil
-        end
+      if (en_passant?(piece, coord))
+        give_en_passant(piece, coord)
+      elsif (coord == piece.en_passant_capture)
+        capture_en_passant(piece, coord)
       end
     end
 
@@ -139,6 +167,8 @@ class Board
     end
 
     piece.has_moved = true
+    remove_en_passant(piece.color)
+
     change_position(piece, coord)
   end
 
@@ -259,17 +289,13 @@ class Board
     return false
   end
 
-  def en_passant?
-    
-  end
-
   def checkmate?(color)
     return false if (!king_in_check?(color))
     stalemate?(color)
   end
 
   def stalemate?(color)
-    pieces = @data.flatten.map { |sq| sq.piece} 
+    pieces = @data.flatten.map { |sq| sq.piece}
     pieces.compact!.filter! { |p| p.color == color}
     pieces.each do |piece|
       return false if !get_valid_moves(piece).empty?
