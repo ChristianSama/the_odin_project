@@ -25,8 +25,8 @@ class Board
     # pawn1.has_moved = true
     # @data[3][5].piece = pawn1
 
-    pawn2 = Pawn.new(:white, [4, 4])
-    @data[4][4].piece = pawn2
+    pawn2 = Pawn.new(:white, [6, 4])
+    @data[6][4].piece = pawn2
     pawn2.has_moved = true
 
   end
@@ -142,6 +142,20 @@ class Board
     pieces.each do |piece|
       piece.en_passant_capture = nil
     end
+  end
+
+  def pawn_last_rank?(piece)
+    return false if !piece.is_a?(Pawn)
+    last_rank = :white ? 7 : 0
+    if piece.position[0] == last_rank
+      return true
+    end
+    return false
+  end
+
+  def promote_pawn(pawn, new_piece)
+    new_piece.position = pawn.position
+    get_square(pawn.position).piece = new_piece
   end
 
   def move(piece, coord)

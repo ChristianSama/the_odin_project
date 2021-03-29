@@ -1,9 +1,9 @@
 class Piece
 
-  attr_reader :position, :color, :sprite, :direction
-  attr_accessor :captured, :has_moved
+  attr_reader :color, :sprite, :direction
+  attr_accessor :captured, :has_moved, :position
 
-  def initialize(color, position)
+  def initialize(color, position = nil)
     @color = color
     @captured = []
     @has_moved = false

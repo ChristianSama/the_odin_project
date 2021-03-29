@@ -14,9 +14,19 @@ class Chess
       system "cls"
       selection = nil
       valid_moves = nil
+      
+      @board.print_board
+
+      if (@board.checkmate?(@current_player))
+        puts "Checkmate - #{@current_player == :white ? :black : :white} player won"
+        break
+      elsif(@board.stalemate?(@current_player))
+        puts "Stalemate - #{@current_player} has no valid moves"
+        break
+      end
 
       #selection phase
-      @board.print_board
+
       puts "#{@current_player}'s turn."
       puts 'Input the coordinates of a piece to select it for example: D2.'
       loop do
@@ -53,21 +63,42 @@ class Chess
         end
         @board.move(@board.selected_piece, translate(input))
         @board.unmark_moves
+
+        if (@board.pawn_last_rank?(@board.selected_piece))
+
+          piece = nil
+          loop do
+            puts 'Choose a piece to promote your pawn: ' +
+                '\n1: Queen' +
+                '\n2: Rook' +
+                '\n3: Bishop' +
+                '\n4: Knight'
+            input = gets.chomp.to_i
+            
+            case input
+            when 1
+              piece = Queen.new(@current_player)
+            when 2
+              piece = Rook.new(@current_player)
+            when 3
+              piece = Bishop.new(@current_player)
+            when 4
+              piece = Knight.new(@current_player)
+            else
+              puts 'Invalid selection. Enter a number 1 - 4'
+            end
+
+            break if (input < 5 || input > 0)
+          end
+          
+          @board.promote_pawn(@board.selected_piece, piece)
+        end
+
         break
       end
       
       @current_player = @current_player == :white ? :black : :white
-      
-      if (@board.checkmate?(@current_player))
-        @board.print_board
-        puts "Checkmate - #{@current_player == :white ? :black : :white} player won"
-        break
-      elsif(@board.stalemate?(@current_player))
-        @board.print_board
-        puts "Stalemate - #{@current_player} has no valid moves"
-        break
-      end
-      
+
     end
   end
 
@@ -81,33 +112,6 @@ class Chess
     return false if (piece == nil || piece.color != @current_player)
     return true
   end
-
-  # def has_valid_moves?(coord)
-  #   piece = @board.get_square(coord).piece
-  #   valid_moves = @board.get_unexposed_moves(piece)
-  #   return false if valid_moves.empty?
-  #   return true
-  # end
-
-  # def valid_move?(coord)
-  #   piece = @board.selected_piece
-  #   valid_moves = @board.get_unexposed_moves(piece)
-
-    #it's a coord from piece.moveset
-    #doesn't have pieces inbetween (except knight)
-    #if piece is captured, remove it
-    #if under check must remove check
-    #it must not expose check
-
-  #   if (valid_moves.include?(coord))
-  #     return true
-  #   end
-  #   return false
-
-    #if piece is pawn and reaches back rank, promote
-    #if move is a castle
-    #if move is checkmate or stalemate gameover
-  # end
 
   def translate(alg_notation)
     coord = alg_notation.split("")
