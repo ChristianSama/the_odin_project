@@ -3,7 +3,7 @@ require_relative '../movement'
 class Bishop < Piece
   include Movement
   
-  def initialize(color, position)
+  def initialize(color, position = nil)
     super(color, position)
     @sprite = color == :white ? "\u265d" : "\u2657"
   end

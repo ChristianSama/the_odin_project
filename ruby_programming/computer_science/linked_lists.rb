@@ -1,3 +1,11 @@
+class Node
+  attr_accessor :value, :next_node
+  def initialize(value: nil, next_node: nil)
+    @value = value
+    @next_node = next_node
+  end
+end
+
 class LinkedList
   attr_accessor :head
   def initialize
@@ -139,13 +147,7 @@ class LinkedList
   end
 end
 
-class Node
-  attr_accessor :value, :next_node
-  def initialize(value: nil, next_node: nil)
-    @value = value
-    @next_node = next_node
-  end
-end
+
 
 list = LinkedList.new();
 list.head = Node.new(value: "0 / head");

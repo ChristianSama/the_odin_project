@@ -5,7 +5,7 @@ class Pawn < Piece
 
   attr_accessor :en_passant_capture, :en_passant_piece
 
-  def initialize(color, position)
+  def initialize(color, position = nil)
     super(color, position)
     @sprite = color == :white ? "\u265f" : "\u2659"
   end

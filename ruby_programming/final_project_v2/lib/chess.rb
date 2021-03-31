@@ -9,97 +9,102 @@ class Chess
   end
   
   def start
-    while(true)
-
-      system "cls"
-      selection = nil
-      valid_moves = nil
-      
-      @board.print_board
-
-      if (@board.checkmate?(@current_player))
-        puts "Checkmate - #{@current_player == :white ? :black : :white} player won"
-        break
-      elsif(@board.stalemate?(@current_player))
-        puts "Stalemate - #{@current_player} has no valid moves"
-        break
-      end
-
-      #selection phase
-
-      puts "#{@current_player}'s turn."
-      puts 'Input the coordinates of a piece to select it for example: D2.'
-      loop do
-        input = gets.chomp
-        if (!valid_coordinate?(input))
-          puts 'Invalid coordinate. Try again.'
-          next
-        elsif (!valid_selection?(translate(input)))
-          puts 'Invalid selection. Try selecting one of your pieces.'
-          next
-        end
-        selection = @board.select_piece(translate(input))
-        valid_moves = @board.get_valid_moves(selection)
-
-        if (valid_moves.empty?)
-          puts 'Selected piece has no valid moves. Try again.'
-          next
-        end
-        @board.mark_moves(valid_moves)
-        break
-      end
-      
-      #move phase
-      @board.print_board
-      puts 'Input the coordinates of a square to move.'
-      loop do
-        input = gets.chomp
-        if (!valid_coordinate?(input))
-          puts 'Invalid coordinate. Try again.'
-          next
-        elsif (!valid_moves.include?(translate(input)))
-          puts 'Invalid move. Try again.'
-          next
-        end
-        @board.move(@board.selected_piece, translate(input))
+    loop do
+      catch :game_loop do 
+        selection = nil
+        valid_moves = nil
+        
+        system "clear"
         @board.unmark_moves
-
-        if (@board.pawn_last_rank?(@board.selected_piece))
-
-          piece = nil
-          loop do
-            puts 'Choose a piece to promote your pawn: ' +
-                '\n1: Queen' +
-                '\n2: Rook' +
-                '\n3: Bishop' +
-                '\n4: Knight'
-            input = gets.chomp.to_i
-            
-            case input
-            when 1
-              piece = Queen.new(@current_player)
-            when 2
-              piece = Rook.new(@current_player)
-            when 3
-              piece = Bishop.new(@current_player)
-            when 4
-              piece = Knight.new(@current_player)
-            else
-              puts 'Invalid selection. Enter a number 1 - 4'
-            end
-
-            break if (input < 5 || input > 0)
+        @board.print_board
+        break if game_over?
+        #selection phase
+  
+        loop do
+          input = ask_input("#{@current_player}'s turn.\nInput the coordinates of a piece to select it. 'exit' to terminate")
+          return if input == 'exit'
+  
+          if (!valid_coordinate?(input))
+            puts 'Invalid coordinate. Try again.'
+            next
+          elsif (!valid_selection?(translate(input)))
+            puts 'Invalid selection. Try selecting one of your pieces.'
+            next
           end
-          
-          @board.promote_pawn(@board.selected_piece, piece)
+          selection = @board.select_piece(translate(input))
+          valid_moves = @board.get_valid_moves(selection)
+  
+          if (valid_moves.empty?)
+            puts 'Selected piece has no valid moves. Try again.'
+            next
+          end
+          @board.mark_moves(valid_moves)
+          break
         end
-
-        break
+        
+        #move phase
+        system "clear"
+        @board.print_board
+        
+        loop do
+          input = ask_input("Input the coordinates of a square to move.\n'exit' to terminate\n'cancel' to cancel move")
+          return if input == 'exit'
+          throw :game_loop if input == 'cancel'
+            
+          if (!valid_coordinate?(input))
+            puts 'Invalid coordinate. Try again.'
+            next
+          elsif (!valid_moves.include?(translate(input)))
+            puts 'Invalid move. Try again.'
+            next
+          end
+          @board.move(@board.selected_piece, translate(input))
+  
+          if (@board.pawn_last_rank?(@board.selected_piece))
+  
+            piece = nil
+            loop do
+              puts 
+              input = ask_input("Choose a piece to promote your pawn: \n1: Queen\n2: Rook\n3: Bishop\n4: Knight")
+              input = input.to_i
+              piece = choose_promotion(input)
+              break if (input < 5 || input > 0)
+            end
+            @board.promote_pawn(@board.selected_piece, piece)
+          end
+          break
+        end
+        @current_player = @current_player == :white ? :black : :white
       end
-      
-      @current_player = @current_player == :white ? :black : :white
-
     end
+  end
+
+  def game_over?
+    if (@board.checkmate?(@current_player))
+      puts "Checkmate - #{@current_player == :white ? :black : :white} player won"
+      return true
+    elsif(@board.stalemate?(@current_player))
+      puts "Stalemate - #{@current_player} has no valid moves"
+      return true
+    end
+    return false
+  end
+
+  def choose_promotion(input)
+    piece = nil
+    case input
+    when 1
+      piece = Queen.new(@current_player)
+    when 2
+      piece = Rook.new(@current_player)
+    when 3
+      piece = Bishop.new(@current_player)
+    when 4
+      piece = Knight.new(@current_player)
+    else
+      puts 'Invalid selection. Enter a number 1 - 4'
+    end
+    piece
   end
 
   def valid_coordinate?(alg_notation)
@@ -119,6 +124,12 @@ class Chess
     coord[0] = coord[1].to_i - 1
     coord[1] = temp.downcase.ord - ('a'.ord)
     return coord
+  end
+
+  def ask_input(prompt)
+    puts prompt
+    input = gets.chomp
+    input
   end
 end
 

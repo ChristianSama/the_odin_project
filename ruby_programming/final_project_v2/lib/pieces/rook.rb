@@ -1,7 +1,7 @@
 class Rook < Piece
   include Movement
 
-  def initialize(color, position)
+  def initialize(color, position = nil)
     super(color, position)
     @sprite = color == :white ? "\u265c" : "\u2656"
   end

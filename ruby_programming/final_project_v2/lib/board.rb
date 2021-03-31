@@ -11,43 +11,36 @@ class Board
     @data = Array.new(8) {Array.new(8) {Square.new}}
     setup_pieces(:white)
     setup_pieces(:black)
-    @white_king = @data[0][6].piece = King.new(:white, [0, 6])
-    @black_king = @data[6][0].piece = King.new(:black, [6, 0])
-    # @data[4][3].piece = Bishop.new(:black, [4, 3])
-    # @data[0][5].piece = Bishop.new(:white, [0, 5])
-    @data[7][5].piece = Rook.new(:black, [7, 5])
-    @data[1][0].piece = Rook.new(:black, [1, 0])
-    @data[0][4].piece = Queen.new(:white, [0, 4])
-    @data[0][5].piece = Knight.new(:white, [0, 5])
-    @data[6][3].piece = Pawn.new(:black, [6, 3])
-
-    # pawn1 = Pawn.new(:black, [3, 5])
-    # pawn1.has_moved = true
-    # @data[3][5].piece = pawn1
-
-    pawn2 = Pawn.new(:white, [6, 4])
-    @data[6][4].piece = pawn2
-    pawn2.has_moved = true
-
+    @white_king = get_square([0, 4]).piece
+    @black_king = get_square([7, 3]).piece
   end
 
   def setup_pieces(color)
     row = color == :white ? 0 : 7
-    # @data[row][0].piece = Rook.new(color, [row, 0])
-    # @data[row][1].piece = Knight.new(color)
-    # @data[row][2].piece = Bishop.new(color, [row, 2])
-    # @data[row][3].piece = Queen.new(color)
-    # @data[row][5].piece = Bishop.new(color, [row, 5])
-    # @data[row][6].piece = Knight.new(color)
-    # @data[row][7].piece = Rook.new(color, [row, 7])
+    pieces = [Rook.new(color), 
+              Knight.new(color), 
+              Bishop.new(color), 
+              Queen.new(color),
+              King.new(color),
+              Bishop.new(color), 
+              Knight.new(color), 
+              Rook.new(color)]
 
-    # row = color == :white ? 1 : 6
-    # 8.times do |i|
-    #   @data[row][i].piece = Pawn.new(color, [row, i])
-    # end
+    pieces.reverse! if (color == :black)
+
+    pieces.each_with_index do |piece, i|
+      piece.position = [row, i]
+      @data[row][i].piece = piece
+    end
+
+    row = color == :white ? 1 : 6
+    8.times do |i|
+      @data[row][i].piece = Pawn.new(color, [row, i])
+    end
   end
 
   def print_board
+    puts
     @data.reverse.each_with_index do |row, i|
       #print divider
       print '   '
@@ -104,10 +97,6 @@ class Board
     capture
   end
 
-  def castle
-
-  end
-
   def en_passant?(piece, coord)
     return false if (!piece.is_a?(Pawn))
     if (!piece.has_moved)
@@ -127,6 +116,7 @@ class Board
     adjacent_pawns << get_square([coord[0], coord[1] - 1]).piece
 
     adjacent_pawns.compact.each do |pawn|
+      next if (!pawn.is_a(Pawn))
       cap_coord = [piece.position[0] + (1 * piece.direction), piece.position[1]]
       pawn.en_passant_capture = cap_coord
     end
