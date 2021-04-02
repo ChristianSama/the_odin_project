@@ -33,10 +33,10 @@ class Board
       @data[row][i].piece = piece
     end
 
-    row = color == :white ? 1 : 6
-    8.times do |i|
-      @data[row][i].piece = Pawn.new(color, [row, i])
-    end
+    # row = color == :white ? 1 : 6
+    # 8.times do |i|
+    #   @data[row][i].piece = Pawn.new(color, [row, i])
+    # end
   end
 
   def print_board
@@ -150,7 +150,6 @@ class Board
   end
 
   def move(piece, coord)
-
     if (piece.is_a?(Pawn))
       if (en_passant?(piece, coord))
         give_en_passant(piece, coord)
@@ -160,18 +159,13 @@ class Board
     end
 
     if (piece.is_a?(King))
-      # if (!castle_moves(piece).empty?)
-      #   if (coord == [0, 2])
-      #     rook = get_corner_piece(piece.color, -1)
-      #     move(rook, [coord[0], coord[1] + 1])
-      #   elsif (coord == [0, 6])
-      #     rook = get_corner_piece(piece.color, 1)
-      #     move(rook, [coord[0], coord[1] - 1])
-      #   end
-      # end
-
-      
-
+      if (coord == castle_move(piece, 1))
+        rook = get_corner_piece(piece.color, 1)
+        move(rook, [coord[0], coord[1] - 1 * piece.direction])
+      elsif (coord == castle_move(piece, -1))
+        rook = get_corner_piece(piece.color, -1)
+        move(rook, [coord[0], coord[1] + 1 * piece.direction])
+      end
     end
 
     piece.has_moved = true
@@ -181,6 +175,7 @@ class Board
   end
 
   def mark_moves(moves)
+  p moves
     moves.each do |move|
       square = get_square(move)
       square.marked = true
@@ -219,9 +214,12 @@ class Board
 
     #castle moves
     if (piece.is_a?(King))
-      valid_moves << castle_move(piece, 1)
-      valid_moves << castle_move(piece, -1)
+      castle_left = castle_move(piece, -1)
+      castle_right = castle_move(piece, 1)
+      valid_moves << castle_left if castle_left != nil
+      valid_moves << castle_right if castle_right != nil
     end
+
     valid_moves
   end
 
