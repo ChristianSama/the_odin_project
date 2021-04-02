@@ -33,10 +33,10 @@ class Board
       @data[row][i].piece = piece
     end
 
-    # row = color == :white ? 1 : 6
-    # 8.times do |i|
-    #   @data[row][i].piece = Pawn.new(color, [row, i])
-    # end
+    row = color == :white ? 1 : 6
+    8.times do |i|
+      @data[row][i].piece = Pawn.new(color, [row, i])
+    end
   end
 
   def print_board
@@ -80,6 +80,10 @@ class Board
   end
 
   def get_square(coord)
+    if (coord[0] < 0 || coord[0] > 7 ||
+      coord[1] < 0 || coord[1] > 7)
+      return nil
+    end
     return @data[coord[0]][coord[1]]
   end
 
@@ -97,25 +101,28 @@ class Board
     capture
   end
 
+  def get_adjacent_pawns(coord)
+    adjacent_pawns = []
+    adjacent_pawns << get_square([coord[0], coord[1] + 1])
+    adjacent_pawns << get_square([coord[0], coord[1] - 1])
+    adjacent_pawns.map do |sq|
+      next if sq == nil
+      sq.piece
+    end
+  end
+
   def en_passant?(piece, coord)
     return false if (!piece.is_a?(Pawn))
     if (!piece.has_moved)
       if (coord[0] == piece.position[0] + (2 * piece.direction))
-        adjacent_pawns = []
-        adjacent_pawns << get_square([coord[0], coord[1] + 1]).piece
-        adjacent_pawns << get_square([coord[0], coord[1] - 1]).piece
-        return true if !adjacent_pawns.compact.empty?
+        return true if !get_adjacent_pawns(coord).empty?
       end
     end
     return false
   end
 
   def give_en_passant(piece, coord)
-    adjacent_pawns = []
-    adjacent_pawns << get_square([coord[0], coord[1] + 1]).piece
-    adjacent_pawns << get_square([coord[0], coord[1] - 1]).piece
-
-    adjacent_pawns.compact.each do |pawn|
+    get_adjacent_pawns(coord).each do |pawn|
       next if (!pawn.is_a?(Pawn))
       next if (pawn.color == piece.color)
       cap_coord = [piece.position[0] + (1 * piece.direction), piece.position[1]]
