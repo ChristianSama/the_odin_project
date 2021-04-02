@@ -116,7 +116,8 @@ class Board
     adjacent_pawns << get_square([coord[0], coord[1] - 1]).piece
 
     adjacent_pawns.compact.each do |pawn|
-      next if (!pawn.is_a(Pawn))
+      next if (!pawn.is_a?(Pawn))
+      next if (pawn.color == piece.color)
       cap_coord = [piece.position[0] + (1 * piece.direction), piece.position[1]]
       pawn.en_passant_capture = cap_coord
     end
@@ -159,15 +160,18 @@ class Board
     end
 
     if (piece.is_a?(King))
-      if (!castle_moves(piece).empty?)
-        if (coord == [0, 2])
-          rook = get_corner_piece(piece.color, -1)
-          move(rook, [coord[0], coord[1] + 1])
-        elsif (coord == [0, 6])
-          rook = get_corner_piece(piece.color, 1)
-          move(rook, [coord[0], coord[1] - 1])
-        end
-      end
+      # if (!castle_moves(piece).empty?)
+      #   if (coord == [0, 2])
+      #     rook = get_corner_piece(piece.color, -1)
+      #     move(rook, [coord[0], coord[1] + 1])
+      #   elsif (coord == [0, 6])
+      #     rook = get_corner_piece(piece.color, 1)
+      #     move(rook, [coord[0], coord[1] - 1])
+      #   end
+      # end
+
+      
+
     end
 
     piece.has_moved = true
@@ -215,7 +219,8 @@ class Board
 
     #castle moves
     if (piece.is_a?(King))
-      valid_moves += castle_moves(piece)
+      valid_moves << castle_move(piece, 1)
+      valid_moves << castle_move(piece, -1)
     end
     valid_moves
   end
@@ -225,48 +230,34 @@ class Board
     under_attack?(color, king.position)
   end
 
-  def castle_moves(king)
-    moves = []
-    row = king.position[0]
-    if (can_castle?(king, 1))
-      col = king.color == :white ? 6 : 1
-      moves << [row, col]
-    end
-    if (can_castle?(king, -1))
-      col = king.color == :white ? 2 : 5
-      moves << [row, col]
-    end
-    moves
-  end
+  def castle_move(king, dir) #@white_king, -1 ---> can castle left?
 
-  def can_castle?(king, dir) #@white_king, -1 ---> can castle left?
-
-    return false if (king.has_moved)
-    return false if (king_in_check?(king.color))
+    return nil if (king.has_moved)
+    return nil if (king_in_check?(king.color))
 
     x_offset = dir == 1 ? 3 : 4
     row = king.position[0]
     col = king.position[1] + (x_offset * dir * king.direction)
     rook_square = get_square([row, col])
     
-    return false if (rook_square == nil)
-    return false if (rook_square.piece == nil)
-    return false if (rook_square.piece.has_moved)
+    return nil if (rook_square == nil)
+    return nil if (rook_square.piece == nil)
+    return nil if (rook_square.piece.has_moved)
 
     moves = king.linear_moves(king, [0, dir], x_offset - 1)
 
     moves.each do |m|
       if (!free?(m))
-        return false
+        return nil
       end
 
       break if (dir == -1 && m == moves.last)
 
       if (under_attack?(king.color, m))
-        return false
+        return nil
       end
     end
-    return true
+    return [row, king.position[1] + (2 * dir * king.direction)]
   end
 
   def get_corner_piece(color, side)
